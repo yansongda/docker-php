@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y libpng12-dev libjpeg-dev libbz2-dev lib
   && rm -rf /var/lib/apt/lists/* \
   && rm -rf /tmp/pear \
   && curl https://dl.laravel-china.org/composer.phar -o /usr/local/bin/composer \
-  && chmod a+x /usr/local/bin/composer
+  && chmod a+x /usr/local/bin/composer \
+  && composer config -g repo.packagist composer https://packagist.phpcomposer.com
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
