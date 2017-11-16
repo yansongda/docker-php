@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y libpng12-dev libjpeg-dev libbz2-dev lib
   && docker-php-ext-enable redis memcached mongodb swoole \
   && rm -rf /var/lib/apt/lists/* \
   && rm -rf /tmp/pear
+  && curl https://dl.laravel-china.org/composer.phar -o /usr/local/bin/composer
+  && chmod a+x /usr/local/bin/composer
 
 ENTRYPOINT ["docker-php-entrypoint"]
 

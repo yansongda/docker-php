@@ -1,7 +1,7 @@
 # docker-php7-fpm
 Docker with php7-fpm
 
-### Added ext
+## Added ext
 - bcmath
 - bz2 
 - gd 
@@ -16,7 +16,10 @@ Docker with php7-fpm
 - memcached
 - swoole
 
-### Modified php.ini
+## Modified php.ini
 - memory_limit = 256M
 - post_max_size = 20M
 - upload_max_filesize = 20M
+
+## Added tools
+- composer
