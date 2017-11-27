@@ -1,6 +1,13 @@
 # docker-php7-fpm
 Docker with php7-fpm
 
+## Usage
+### China Region
+docker pull registry.cn-shenzhen.aliyuncs.com/yansongda/php7-fpm
+
+### Docker Hub
+docker pull yansongda/php7-fpm
+
 ## Added ext
 - bcmath
 - bz2 
