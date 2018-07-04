@@ -30,4 +30,3 @@ docker pull yansongda/php7-fpm
 
 ## Added tools
 - composer
-- git
