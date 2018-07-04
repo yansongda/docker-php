@@ -6,7 +6,7 @@ WORKDIR /www
 COPY sources.list /etc/apt/sources.list
 COPY php.ini /usr/local/etc/php/conf.d/
 
-RUN apt-get update && apt-get install -y libmcrypt-dev libmemcached-dev mcrypt libbz2-dev libpng-dev git \
+RUN apt-get update && apt-get install -y libmcrypt-dev libmemcached-dev mcrypt libbz2-dev libpng-dev \
   && pecl install -o -f mongodb swoole redis mcrypt memcached \
   && docker-php-ext-enable mongodb swoole redis mcrypt memcached \
   && docker-php-ext-install bcmath opcache bz2 gd iconv mysqli pdo pdo_mysql zip \
