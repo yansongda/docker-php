@@ -1,12 +1,12 @@
-# docker-php7-fpm
-Docker with php7-fpm
+# docker-php-fpm
+Docker with php-fpm
 
 ## Usage
 ### China Region
-docker pull registry.cn-shenzhen.aliyuncs.com/yansongda/php7-fpm
+docker pull registry.cn-shenzhen.aliyuncs.com/yansongda/php-fpm
 
 ### Docker Hub
-docker pull yansongda/php7-fpm
+docker pull yansongda/php-fpm
 
 ## Added ext
 - bcmath
@@ -27,7 +27,8 @@ docker pull yansongda/php7-fpm
 - memory_limit = 256M
 - post_max_size = 20M
 - upload_max_filesize = 20M
+- date.timezone = Asia/Shanghai
+- max_execution_time = 60
 
 ## Added tools
 - composer
-- git

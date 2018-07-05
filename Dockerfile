@@ -3,9 +3,6 @@ MAINTAINER yansongda <me@yansongda.cn>
 
 WORKDIR /www
 
-COPY sources.list /etc/apt/sources.list
-COPY php.ini /usr/local/etc/php/conf.d/
-
 RUN apt-get update && apt-get install -y libmcrypt-dev libmemcached-dev mcrypt libbz2-dev libpng-dev \
   && pecl install -o -f mongodb swoole redis mcrypt memcached \
   && docker-php-ext-enable mongodb swoole redis mcrypt memcached \
@@ -16,3 +13,6 @@ RUN apt-get update && apt-get install -y libmcrypt-dev libmemcached-dev mcrypt l
   && chmod a+x /usr/local/bin/composer \
   && composer config -g repo.packagist composer https://packagist.phpcomposer.com \
   && composer selfupdate
+
+COPY sources.list /etc/apt/sources.list
+COPY php.ini /usr/local/etc/php/conf.d/
