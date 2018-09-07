@@ -1,4 +1,4 @@
-FROM php:7.1.19-fpm
+FROM php:7.1.21-fpm
 MAINTAINER yansongda <me@yansongda.cn>
 
 WORKDIR /www
@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libbz2-dev libmc
   && rm -rf /tmp/pear \
   && curl https://dl.laravel-china.org/composer.phar -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
-  && composer config -g repo.packagist composer https://packagist.phpcomposer.com
+  && composer config -g repo.packagist composer https://packagist.laravel-china.org
 
 COPY sources.list /etc/apt/sources.list
 COPY php.ini /usr/local/etc/php/conf.d/
