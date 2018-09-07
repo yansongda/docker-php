@@ -1,4 +1,4 @@
-FROM php:7.2.7-fpm
+FROM php:7.2.9-fpm
 MAINTAINER yansongda <me@yansongda.cn>
 
 WORKDIR /www
@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y libmcrypt-dev libmemcached-dev mcrypt l
   && rm -rf /tmp/pear ~/.pearrc \
   && curl https://dl.laravel-china.org/composer.phar -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
-  && composer config -g repo.packagist composer https://packagist.phpcomposer.com \
+  && composer config -g repo.packagist composer https://packagist.laravel-china.org \
   && composer selfupdate
 
 COPY sources.list /etc/apt/sources.list
