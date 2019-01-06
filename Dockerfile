@@ -1,4 +1,4 @@
-FROM php:7.1.21-fpm
+FROM php:7.1.25-fpm
 MAINTAINER yansongda <me@yansongda.cn>
 
 WORKDIR /www
