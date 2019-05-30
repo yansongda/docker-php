@@ -1,5 +1,6 @@
-FROM php:7.1.26-fpm
-MAINTAINER yansongda <me@yansongda.cn>
+FROM php:7.1.29-fpm
+
+LABEL maintainer="yansongda <me@yansongda.cn>"
 
 WORKDIR /www
 
