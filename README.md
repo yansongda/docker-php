@@ -9,6 +9,7 @@ docker pull registry.cn-shenzhen.aliyuncs.com/yansongda/php-fpm
 docker pull yansongda/php-fpm
 
 ## Added ext
+- amqp
 - bcmath
 - bz2 
 - gd 
@@ -22,9 +23,11 @@ docker pull yansongda/php-fpm
 - redis
 - memcached
 - swoole
+- opcache
+- sockets
 
 ## Modified php.ini
-- memory_limit = 256M
+- memory_limit = 512M
 - post_max_size = 20M
 - upload_max_filesize = 20M
 - date.timezone = Asia/Shanghai
