@@ -2,10 +2,11 @@ FROM php:7.2.19-fpm
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
-WORKDIR /www
-
+# ENV for Global
 ENV TZ=Asia/Shanghai
 ENV DEPENDENCIES curl gnupg git wget gcc
+
+# ENV for PHP
 ENV PHP_DEPENDENCIES \
                     libwebp-dev libmcrypt-dev libmemcached-dev libbz2-dev libpng-dev \
                     libxpm-dev librabbitmq-dev libfreetype6-dev libjpeg-dev
@@ -14,6 +15,7 @@ ENV PHP_EXT_INSTALLED \
 ENV PHP_COMPOSER_URL https://dl.laravel-china.org/composer.phar
 ENV PHP_COMPOSER_REPO https://packagist.laravel-china.org
 
+# INSTALL PHP
 RUN apt-get update \
   && apt-get install -y $PHP_DEPENDENCIES $DEPENDENCIES \
   && pecl install -o -f $PHP_EXT_INSTALLED \
@@ -25,11 +27,15 @@ RUN apt-get update \
   && chmod a+x /usr/local/bin/composer \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO
 
+# After Build
+WORKDIR /www
+
+COPY sources.list /etc/apt/sources.list
+COPY php.ini /usr/local/etc/php/conf.d/
+COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
+
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
   && apt-get -y remove $DEPENDENCIES \
   && apt-get purge -y --auto-remove \
   && rm -rf /var/lib/apt/lists/* \
   && rm -rf /tmp/pear ~/.pearrc
-
-COPY sources.list /etc/apt/sources.list
-COPY php.ini /usr/local/etc/php/conf.d/
