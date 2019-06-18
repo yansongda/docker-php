@@ -31,7 +31,7 @@ RUN apt-get update \
 WORKDIR /www
 
 COPY sources.list /etc/apt/sources.list
-COPY php.ini /usr/local/etc/php/conf.d/
+COPY php.ini /usr/local/etc/php/
 COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
