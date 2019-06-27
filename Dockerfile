@@ -9,7 +9,7 @@ ENV DEPENDENCIES curl gnupg git wget gcc
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
                     libwebp-dev libmcrypt-dev libmemcached-dev libbz2-dev libpng-dev \
-                    libxpm-dev librabbitmq-dev libfreetype6-dev libjpeg-dev
+                    libxpm-dev librabbitmq-dev libfreetype6-dev libjpeg-dev libssh-dev
 ENV PHP_EXT_INSTALLED \
                     mongodb swoole redis memcached mcrypt amqp
 ENV PHP_COMPOSER_URL https://dl.laravel-china.org/composer.phar
