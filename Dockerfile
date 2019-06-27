@@ -12,8 +12,8 @@ ENV PHP_DEPENDENCIES \
                     libxpm-dev librabbitmq-dev libfreetype6-dev libjpeg-dev libssh-dev
 ENV PHP_EXT_INSTALLED \
                     mongodb swoole redis memcached mcrypt amqp
-ENV PHP_COMPOSER_URL https://dl.laravel-china.org/composer.phar
-ENV PHP_COMPOSER_REPO https://packagist.laravel-china.org
+ENV PHP_COMPOSER_URL https://getcomposer.org/composer.phar
+ENV PHP_COMPOSER_REPO https://packagist.mirrors.sjtug.sjtu.edu.cn
 
 # INSTALL PHP
 RUN apt-get update \
