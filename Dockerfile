@@ -4,7 +4,7 @@ LABEL maintainer="yansongda <me@yansongda.cn>"
 
 # Global
 ENV TZ=Asia/Shanghai
-ENV DEPENDENCIES curl gnupg git wget gcc
+ENV DEPENDENCIES curl gnupg git wget gcc g++
 
 # ENV for PHP 
 ENV PHP_DEPENDENCIES \
