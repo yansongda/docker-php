@@ -13,7 +13,7 @@ ENV PHP_DEPENDENCIES \
 ENV PHP_EXT_INSTALLED \
                     mongodb swoole redis memcached mcrypt amqp
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer.phar
-ENV PHP_COMPOSER_REPO https://packagist.mirrors.sjtug.sjtu.edu.cn
+ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
 # INSTALL PHP
 RUN apt-get update \
