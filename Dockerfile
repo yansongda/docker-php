@@ -1,4 +1,4 @@
-FROM php:7.1.31-fpm
+FROM php:7.1.32-fpm
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -25,7 +25,13 @@ RUN apt-get update \
   && docker-php-ext-enable opcache redis memcached mongodb swoole mcrypt amqp \
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
-  && composer config -g repo.packagist composer $PHP_COMPOSER_REPO
+  && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
+# CLEAN
+  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+  && apt-get -y remove $DEPENDENCIES \
+  && apt-get purge -y --auto-remove \
+  && rm -rf /var/lib/apt/lists/* \
+  && rm -rf /tmp/pear ~/.pearrc
 
 # After Build
 WORKDIR /www
@@ -33,9 +39,3 @@ WORKDIR /www
 COPY sources.list /etc/apt/sources.list
 COPY php.ini /usr/local/etc/php/
 COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
-
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-  && apt-get -y remove $DEPENDENCIES \
-  && apt-get purge -y --auto-remove \
-  && rm -rf /var/lib/apt/lists/* \
-  && rm -rf /tmp/pear ~/.pearrc
