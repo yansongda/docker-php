@@ -1,0 +1,21 @@
+name: Docker Image CI
+
+on: [push, pull_request]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - 7.1
+          - 7.2
+ 
+    steps:
+    - name: checkout
+      uses: actions/checkout@v1
+    - name: Build the Docker image version - ${{ matrix.version }}
+      run: docker build ${{ matrix.version }} --file Dockerfile --tag yansongda/php-fpm:${{ matrix.version }}
