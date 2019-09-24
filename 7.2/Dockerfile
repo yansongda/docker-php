@@ -8,7 +8,7 @@ ENV DEPENDENCIES curl gnupg git wget gcc g++
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
-                    libwebp-dev libmcrypt-dev libmemcached-dev libbz2-dev libpng-dev \
+                    unzip libwebp-dev libmcrypt-dev libmemcached-dev libbz2-dev libpng-dev \
                     libxpm-dev librabbitmq-dev libfreetype6-dev libjpeg-dev libssh-dev
 ENV PHP_EXT_INSTALLED \
                     mongodb swoole redis memcached mcrypt amqp
@@ -17,7 +17,7 @@ ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
 # INSTALL PHP
 RUN apt-get update \
-  && apt-get install -y unzip $PHP_DEPENDENCIES $DEPENDENCIES \
+  && apt-get install -y $PHP_DEPENDENCIES $DEPENDENCIES \
   && pecl install -o -f $PHP_EXT_INSTALLED \
   && docker-php-ext-configure gd --with-gd --with-webp-dir --with-jpeg-dir \
       --with-png-dir --with-zlib-dir --with-xpm-dir --with-freetype-dir \
