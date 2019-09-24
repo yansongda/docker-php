@@ -18,4 +18,4 @@ jobs:
     - name: checkout
       uses: actions/checkout@v1
     - name: Build the Docker image version
-      run: docker build -t yansongda/php-fpm:${{ matrix.version }} ./${{ matrix.version }}
+      run: docker build -t ${{ github.repository }}:${{ matrix.version }} ./${{ matrix.version }}
