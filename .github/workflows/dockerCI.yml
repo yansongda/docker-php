@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
 
   build:
-
+    name: build ${{ matrix.version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -13,9 +13,8 @@ jobs:
         version:
           - 7.1
           - 7.2
- 
     steps:
     - name: checkout
       uses: actions/checkout@v1
-    - name: Build the Docker image version - ${{ matrix.version }}
+    - name: Build the Docker image version
       run: docker build -t yansongda/php-fpm:${{ matrix.version }} ./${{ matrix.version }}
