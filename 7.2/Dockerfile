@@ -11,7 +11,7 @@ ENV PHP_DEPENDENCIES \
                     unzip libwebp-dev libmcrypt-dev libmemcached-dev libbz2-dev libpng-dev \
                     libxpm-dev librabbitmq-dev libfreetype6-dev libjpeg-dev libssh-dev
 ENV PHP_EXT_INSTALLED \
-                    mongodb swoole redis memcached mcrypt amqp
+                    mongodb-1.6.0 swoole redis-4.3.0 memcached-3.1.3 mcrypt-1.0.3 amqp-1.9.4
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 

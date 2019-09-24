@@ -9,19 +9,19 @@ docker pull registry.cn-shenzhen.aliyuncs.com/yansongda/php-fpm
 docker pull yansongda/php-fpm
 
 ## Added ext
-- amqp
+- amqp-1.9.4
 - bcmath
 - bz2 
 - gd 
 - iconv 
-- mcrypt 
+- mcrypt-1.0.3
 - mysqli
 - pdo
 - pdo_mysql
 - zip
-- mongodb
-- redis
-- memcached
+- mongodb-1.6.0
+- redis-4.3.0
+- memcached-3.1.3
 - swoole
 - opcache
 - sockets
