@@ -20,15 +20,7 @@ ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 # INSTALL PHP
 RUN apt-get update \
   && apt-get install -y $PHP_DEPENDENCIES $DEPENDENCIES \
-  && pecl install -o -f $PHP_EXT_INSTALLED_PECL \
-  && docker-php-ext-configure gd --with-gd --with-webp-dir --with-jpeg-dir \
-      --with-png-dir --with-zlib-dir --with-xpm-dir --with-freetype-dir \
-  && docker-php-ext-install opcache bcmath bz2 gd iconv mysqli pdo pdo_mysql zip sockets \
-  && docker-php-ext-enable opcache redis memcached mongodb mcrypt amqp \
-  && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
-  && chmod a+x /usr/local/bin/composer \
-  && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
-# INSTALL PHP SWOOLE
+# INSTALL PHP EXT-SWOOLE
   && mkdir -p $WORKING_DIR && cd $WORKING_DIR \
   && curl -SL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o swoole.tar.gz \
   && ls -alh \
@@ -40,7 +32,15 @@ RUN apt-get update \
         && ./configure --enable-mysqlnd --enable-openssl --enable-http2 \
         && make -s -j$(nproc) && make install \
     ) \
-  && echo "extension=swoole.so" > /etc/php7/conf.d/swoole.ini \
+# INSTALL PHP EXT
+  && pecl install -o -f $PHP_EXT_INSTALLED_PECL \
+  && docker-php-ext-configure gd --with-gd --with-webp-dir --with-jpeg-dir \
+      --with-png-dir --with-zlib-dir --with-xpm-dir --with-freetype-dir \
+  && docker-php-ext-install opcache bcmath bz2 gd iconv mysqli pdo pdo_mysql zip sockets \
+  && docker-php-ext-enable opcache redis memcached mongodb mcrypt amqp swoole \
+  && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
+  && chmod a+x /usr/local/bin/composer \
+  && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
 # CLEAN
   && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
   && apt-get -y remove $DEPENDENCIES \
