@@ -22,7 +22,7 @@ docker pull yansongda/php-fpm
 - mongodb-1.6.0
 - redis-4.3.0
 - memcached-3.1.3
-- swoole
+- swoole-4.4.12
 - opcache
 - sockets
 
