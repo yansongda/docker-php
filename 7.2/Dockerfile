@@ -4,12 +4,12 @@ LABEL maintainer="yansongda <me@yansongda.cn>"
 
 # ENV for Global
 ENV TZ=Asia/Shanghai
-ENV DEPENDENCIES curl gnupg git wget gcc g++
+ENV DEPENDENCIES gnupg git gcc g++
 ENV WORKING_DIR /www/software
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
-                    unzip libwebp-dev libmcrypt-dev libmemcached-dev libbz2-dev libpng-dev \
+                    curl wget unzip libwebp-dev libmcrypt-dev libmemcached-dev libbz2-dev libpng-dev \
                     libxpm-dev librabbitmq-dev libfreetype6-dev libjpeg-dev libssh-dev
 ENV PHP_EXT_INSTALLED_PECL \
                     mongodb-1.6.0 redis-4.3.0 memcached-3.1.4 mcrypt-1.0.3 amqp-1.9.4
@@ -18,8 +18,8 @@ ENV PHP_COMPOSER_URL https://getcomposer.org/composer.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
 # INSTALL PHP
-RUN apt-get update \
-  && apt-get install -y $PHP_DEPENDENCIES $DEPENDENCIES \
+RUN apt update \
+  && apt install -y $PHP_DEPENDENCIES $DEPENDENCIES \
 # INSTALL PHP EXT-SWOOLE
   && mkdir -p $WORKING_DIR && cd $WORKING_DIR \
   && curl -SL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o swoole.tar.gz \
@@ -43,8 +43,8 @@ RUN apt-get update \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
 # CLEAN
   && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-  && apt-get -y remove $DEPENDENCIES \
-  && apt-get purge -y --auto-remove \
+  && apt -y remove $DEPENDENCIES \
+  && apt purge -y --auto-remove \
   && rm -rf /var/lib/apt/lists/* \
   && rm -rf /tmp/pear ~/.pearrc \
   && cd $WORKING_DIR && cd .. && rm -rf $WORKING_DIR
