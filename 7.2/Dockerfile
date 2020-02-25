@@ -9,8 +9,9 @@ ENV WORKING_DIR /www/software
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
-                    curl wget unzip libwebp-dev libmcrypt-dev libmemcached-dev libbz2-dev libpng-dev \
-                    libxpm-dev librabbitmq-dev libfreetype6-dev libjpeg-dev libssh-dev
+                    curl wget unzip libcurl4-openssl-dev libwebp-dev libmcrypt-dev \
+                    libmemcached-dev libbz2-dev libpng-dev libxpm-dev librabbitmq-dev \
+                    libfreetype6-dev libjpeg-dev libssh-dev
 ENV PHP_EXT_INSTALLED_PECL \
                     mongodb-1.6.0 redis-4.3.0 memcached-3.1.4 mcrypt-1.0.3 amqp-1.9.4
 ENV PHP_EXT_SWOOLE_VERSION 4.4.14
