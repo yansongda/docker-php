@@ -19,10 +19,10 @@ docker pull yansongda/php-fpm
 - pdo
 - pdo_mysql
 - zip
-- mongodb-1.6.0
+- mongodb-1.7.4
 - redis-4.3.0
-- memcached-3.1.3
-- swoole-4.4.14
+- memcached-3.1.5
+- swoole-4.4.16
 - opcache
 - sockets
 
