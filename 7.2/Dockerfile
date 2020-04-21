@@ -1,4 +1,4 @@
-FROM php:7.2.29-fpm
+FROM php:7.2.30-fpm
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -13,8 +13,8 @@ ENV PHP_DEPENDENCIES \
                     libmemcached-dev libbz2-dev libpng-dev libxpm-dev librabbitmq-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    mongodb-1.7.4 redis-4.3.0 memcached-3.1.5 mcrypt-1.0.3 amqp-1.9.4
-ENV PHP_EXT_SWOOLE_VERSION 4.4.16
+                    mongodb-1.7.4 redis-4.3.0 memcached-3.1.5 mcrypt-1.0.3 amqp-1.10.2
+ENV PHP_EXT_SWOOLE_VERSION 4.4.17
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
