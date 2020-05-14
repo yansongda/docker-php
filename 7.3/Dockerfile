@@ -1,4 +1,4 @@
-FROM php:7.3.17-fpm7
+FROM php:7.3.17-fpm
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
