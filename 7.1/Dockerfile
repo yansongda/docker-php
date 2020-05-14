@@ -14,7 +14,7 @@ ENV PHP_DEPENDENCIES \
 ENV PHP_EXT_INSTALLED_PECL \
                     mongodb-1.6.0 redis-4.3.0 memcached-3.1.4 mcrypt-1.0.3 amqp-1.9.4
 ENV PHP_EXT_SWOOLE_VERSION 4.4.12
-ENV PHP_COMPOSER_URL https://getcomposer.org/composer.phar
+ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
 # INSTALL PHP
