@@ -1,4 +1,4 @@
-## ext detail version
+## ext && version
 
 - amqp-1.10.2
 - bcmath
