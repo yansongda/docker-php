@@ -14,7 +14,7 @@ ENV PHP_DEPENDENCIES \
                     libfreetype6-dev libjpeg-dev libssh-dev
 ENV PHP_EXT_INSTALLED_PECL \
                     mongodb-1.7.4 redis-4.3.0 memcached-3.1.5 mcrypt-1.0.3 amqp-1.10.2
-ENV PHP_EXT_SWOOLE_VERSION 4.4.18
+ENV PHP_EXT_SWOOLE_VERSION 4.4.19
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
