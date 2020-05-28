@@ -13,6 +13,6 @@
 - mongodb-1.7.4
 - redis-5.2.2
 - memcached-3.1.5
-- swoole-4.5.1
+- swoole-4.5.2
 - opcache
 - sockets
