@@ -19,8 +19,8 @@ ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
 # INSTALL PHP
-RUN apt update \
-  && apt install -y $PHP_DEPENDENCIES $DEPENDENCIES \
+RUN apt-get update \
+  && apt-get install -y $PHP_DEPENDENCIES $DEPENDENCIES \
 # INSTALL PHP EXT-SWOOLE
   && mkdir -p $WORKING_DIR && cd $WORKING_DIR \
   && curl -SL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o swoole.tar.gz \
@@ -44,8 +44,8 @@ RUN apt update \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
 # CLEAN
   && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-  && apt -y remove $DEPENDENCIES \
-  && apt purge -y --auto-remove \
+  && apt-get -y remove $DEPENDENCIES \
+  && apt-get purge -y --auto-remove \
   && rm -rf /var/lib/apt/lists/* \
   && rm -rf /tmp/pear ~/.pearrc \
   && cd $WORKING_DIR && cd .. && rm -rf $WORKING_DIR
