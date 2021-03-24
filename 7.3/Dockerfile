@@ -30,7 +30,7 @@ RUN apt-get update \
   && ( \
         cd swoole \
         && phpize \
-        && ./configure --enable-mysqlnd --enable-openssl --enable-http2 \
+        && ./configure --enable-openssl --enable-http2 --enable-swoole-json --enable-swoole-curl \
         && make -s -j$(nproc) && make install \
     ) \
 # INSTALL PHP EXT
