@@ -36,8 +36,8 @@ RUN apt-get update \
 # INSTALL PHP EXT
   && pecl install -o -f $PHP_EXT_INSTALLED_PECL \
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
-  && docker-php-ext-install opcache bcmath bz2 gd iconv mysqli pdo pdo_mysql zip sockets \
-  && docker-php-ext-enable opcache redis mongodb mcrypt amqp swoole pcntl \
+  && docker-php-ext-install opcache bcmath bz2 gd iconv mysqli pdo pdo_mysql zip pcntl \
+  && docker-php-ext-enable opcache redis mongodb mcrypt amqp swoole \
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
