@@ -1,4 +1,4 @@
-FROM php:7.3.28-fpm
+FROM php:7.3.29-fpm
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -38,7 +38,7 @@ RUN apt-get update \
   && docker-php-ext-configure gd --with-gd --with-webp-dir --with-jpeg-dir \
       --with-png-dir --with-zlib-dir --with-xpm-dir --with-freetype-dir \
   && docker-php-ext-install opcache bcmath bz2 gd iconv mysqli pdo pdo_mysql zip sockets \
-  && docker-php-ext-enable opcache redis mongodb mcrypt amqp swoole \
+  && docker-php-ext-enable opcache redis mongodb mcrypt amqp swoole pcntl \
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
