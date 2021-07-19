@@ -17,4 +17,3 @@
 - opcache
 - sockets
 - pcntl
-- 
