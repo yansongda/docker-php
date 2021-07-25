@@ -1,4 +1,4 @@
-FROM php:7.3.29-fpm
+FROM php:8.0.8-fpm
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -13,7 +13,7 @@ ENV PHP_DEPENDENCIES \
                     libbz2-dev libpng-dev libxpm-dev librabbitmq-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    mongodb-1.9.1 redis-5.3.4 mcrypt-1.0.4 amqp-1.10.2
+                    mongodb-1.10.0 redis-5.3.4 mcrypt-1.0.4 amqp-1.10.2
 ENV PHP_EXT_SWOOLE_VERSION 4.7.0
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
@@ -35,8 +35,7 @@ RUN apt-get update \
     ) \
 # INSTALL PHP EXT
   && pecl install -o -f $PHP_EXT_INSTALLED_PECL \
-  && docker-php-ext-configure gd --with-gd --with-webp-dir --with-jpeg-dir \
-      --with-png-dir --with-zlib-dir --with-xpm-dir --with-freetype-dir \
+  && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
   && docker-php-ext-install opcache bcmath bz2 gd iconv mysqli pdo pdo_mysql zip sockets pcntl \
   && docker-php-ext-enable opcache redis mongodb mcrypt amqp swoole \
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
