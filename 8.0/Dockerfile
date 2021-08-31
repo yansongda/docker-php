@@ -10,7 +10,7 @@ ENV WORKING_DIR /www/software
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
                     curl wget unzip \
-                    libmcrypt-dev libcurl4-openssl-dev \
+                    libmcrypt-dev libcurl4-openssl-dev libssl-dev \
                     zlib1g-dev libpng-dev libwebp-dev libjpeg-dev libxpm-dev libfreetype-dev \
                     libbz2-dev libzip-dev
 # amqp 暂不支持 php8 暂时去掉
