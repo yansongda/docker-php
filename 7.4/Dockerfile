@@ -10,7 +10,7 @@ ENV WORKING_DIR /www/software
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
                     curl wget unzip libcurl4-openssl-dev libwebp-dev libmcrypt-dev \
-                    libbz2-dev libpng-dev libxpm-dev librabbitmq-dev \
+                    libbz2-dev libpng-dev libxpm-dev librabbitmq-dev librdkafka-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
                     mongodb-1.10.0 redis-5.3.4 mcrypt-1.0.4 amqp-1.10.2 rdkafka-4.1.2
