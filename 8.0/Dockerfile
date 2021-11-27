@@ -1,4 +1,4 @@
-FROM php:8.0.12-fpm
+FROM php:8.0.13-fpm
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -16,7 +16,7 @@ ENV PHP_DEPENDENCIES \
 # amqp 暂不支持 php8 暂时去掉
 ENV PHP_EXT_INSTALLED_PECL \
                     mongodb-1.10.0 redis-5.3.4 mcrypt-1.0.4
-ENV PHP_EXT_SWOOLE_VERSION 4.8.1
+ENV PHP_EXT_SWOOLE_VERSION 4.8.2
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
