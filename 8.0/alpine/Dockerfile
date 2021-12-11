@@ -9,11 +9,11 @@ ENV BUILD_DIR /www/build
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
-                    libmcrypt-dev rabbitmq-c-dev librdkafka-dev libpng-dev \
+                    libmcrypt-dev rabbitmq-c-dev libpng-dev \
                     libwebp-dev libjpeg-turbo-dev libxpm-dev freetype-dev \
                     bzip2-dev libzip-dev
 ENV PHP_EXT_PECL_INSTALL \
-                    mongodb-1.11.1 redis-5.3.4 mcrypt-1.0.4 amqp-1.11.0 rdkafka-5.0.2
+                    mongodb-1.11.1 redis-5.3.4 mcrypt-1.0.4 amqp-1.11.0
 ENV PHP_EXT_SWOOLE_VERSION 4.8.3
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
