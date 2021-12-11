@@ -1,4 +1,4 @@
-FROM php:8.0.13-fpm
+FROM php:7.4-fpm-bullseye
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -9,14 +9,12 @@ ENV WORKING_DIR /www/software
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
-                    curl wget unzip \
-                    libmcrypt-dev libcurl4-openssl-dev libssl-dev \
-                    zlib1g-dev libpng-dev libwebp-dev libjpeg-dev libxpm-dev libfreetype-dev \
-                    libbz2-dev libzip-dev
-# amqp 暂不支持 php8 暂时去掉
+                    curl wget unzip libcurl4-openssl-dev libwebp-dev libmcrypt-dev \
+                    libbz2-dev libpng-dev libxpm-dev librabbitmq-dev librdkafka-dev \
+                    libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    mongodb-1.10.0 redis-5.3.4 mcrypt-1.0.4
-ENV PHP_EXT_SWOOLE_VERSION 4.8.2
+                    mongodb-1.11.1 redis-5.3.4 mcrypt-1.0.4 amqp-1.11.0 rdkafka-5.0.2
+ENV PHP_EXT_SWOOLE_VERSION 4.8.3
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
@@ -32,15 +30,14 @@ RUN apt-get update \
   && ( \
         cd swoole \
         && phpize \
-        && ./configure --enable-openssl --with-openssl-dir=/usr/lib/x86_64-linux-gnu/ --enable-http2 --enable-swoole-json --enable-swoole-curl \
+        && ./configure --enable-openssl --enable-http2 --enable-swoole-json --enable-swoole-curl \
         && make -s -j$(nproc) && make install \
     ) \
 # INSTALL PHP EXT
   && pecl install -o -f $PHP_EXT_INSTALLED_PECL \
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
   && docker-php-ext-install opcache bcmath bz2 gd iconv mysqli pdo pdo_mysql zip sockets pcntl \
-# amqp 暂不支持 php8 暂时去掉
-  && docker-php-ext-enable redis mongodb mcrypt swoole \
+  && docker-php-ext-enable opcache redis mongodb mcrypt amqp swoole rdkafka \
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
