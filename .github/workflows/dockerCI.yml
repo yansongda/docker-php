@@ -25,15 +25,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Build the Docker image version
+    - name: Build the docker image
       run: |
-        docker build -t yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }} -f ${{ matrix.platform }}/Dockerfile ./${{ matrix.php-version }}
-        docker tag yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }} registry.cn-shenzhen.aliyuncs.com/yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }}
-    - name: Push Image to Docker Registry
+        docker build -t yansongda/php-fpm -f ./${{ matrix.php-version }}/${{ matrix.platform }}/Dockerfile ./${{ matrix.php-version }}
+    - name: Tag the image
+      run: |
+        docker tag yansongda/php-fpm yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }}
+        docker tag yansongda/php-fpm registry.cn-shenzhen.aliyuncs.com/yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }}
+    - name: Push the image to docker registry
       run: |
         docker login --username yansongda -p ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
         docker push yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }}
-    - name: Push Image to Aliyun Registry
+    - name: Push the image to aliyun registry
       run: |
         docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com -p ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
         docker push registry.cn-shenzhen.aliyuncs.com/yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }}
