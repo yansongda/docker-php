@@ -12,7 +12,7 @@ env:
 
 jobs:
   build:
-    name: build ${{ matrix.php-version }} - ${{ matrix.platform }}
+    name: build "${{ matrix.php-version }}" - ${{ matrix.platform }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -27,7 +27,7 @@ jobs:
       uses: actions/checkout@v2
     - name: Build the docker image
       run: |
-        docker build -t yansongda/php-fpm -f ./${{ matrix.php-version }}/${{ matrix.platform }}/Dockerfile ./${{ matrix.php-version }}
+        docker build -t yansongda/php-fpm -f "./${{ matrix.php-version }}/${{ matrix.platform }}/Dockerfile" "./${{ matrix.php-version }}"
     - name: Tag the image
       run: |
         docker tag yansongda/php-fpm yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }}
