@@ -41,7 +41,7 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
   && pecl install -o -f $PHP_EXT_PECL_INSTALL \
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
   && docker-php-ext-install opcache bcmath bz2 gd iconv mysqli pdo pdo_mysql zip sockets pcntl \
-  && docker-php-ext-enable redis mongodb mcrypt amqp swoole rdkafka \
+  && docker-php-ext-enable redis mongodb mcrypt amqp swoole \
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
