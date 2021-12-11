@@ -55,5 +55,5 @@ RUN apt-get update \
 WORKDIR /www
 
 COPY sources.list /etc/apt/sources.list
-COPY ../php.ini /usr/local/etc/php/
-COPY ../php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY php.ini /usr/local/etc/php/
+COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
