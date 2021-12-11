@@ -12,7 +12,7 @@ ENV PHP_DEPENDENCIES \
                     curl wget unzip \
                     libmcrypt-dev libcurl4-openssl-dev libssl-dev \
                     zlib1g-dev libpng-dev libwebp-dev libjpeg-dev libxpm-dev libfreetype-dev \
-                    libbz2-dev libzip-dev
+                    libbz2-dev libzip-dev librabbitmq-dev
 ENV PHP_EXT_INSTALLED_PECL \
                     mongodb-1.11.1 redis-5.3.4 mcrypt-1.0.4 amqp-1.11.0 rdkafka-5.0.2
 ENV PHP_EXT_SWOOLE_VERSION 4.8.3
