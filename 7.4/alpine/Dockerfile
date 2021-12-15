@@ -4,7 +4,7 @@ LABEL maintainer="yansongda <me@yansongda.cn>"
 
 # ENV for Global
 ENV TZ=Asia/Shanghai
-ENV DEPENDENCIES $PHPIZE_DEPS tzdata curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev
+ENV DEPENDENCIES $PHPIZE_DEPS curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev
 ENV BUILD_DIR /www/build
 
 # ENV for PHP
@@ -19,7 +19,7 @@ ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
 RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
-  && apk add -U --no-cache $PHP_DEPENDENCIES \
+  && apk add -U --no-cache tzdata $PHP_DEPENDENCIES \
   && cp /usr/share/zoneinfo/$TZ /etc/localtime && date \
 # INSTALL PHP EXT-SWOOLE
   && mkdir -p $BUILD_DIR && cd $BUILD_DIR \
