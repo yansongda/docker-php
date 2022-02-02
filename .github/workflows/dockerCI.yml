@@ -2,6 +2,8 @@ name: Docker Image CI
 
 on:
   push:
+    branchs:
+      - master
   schedule:
     - cron: '0 0 * * 1'
 
@@ -14,6 +16,7 @@ jobs:
     name: build ${{ matrix.php-version }} - ${{ matrix.platform }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         php-version:
           - '7.4'
