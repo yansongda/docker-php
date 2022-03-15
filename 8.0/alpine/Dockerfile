@@ -16,7 +16,7 @@ ENV PHP_EXT_PECL_INSTALL \
                     mongodb-1.12.0 redis-5.3.7 mcrypt-1.0.4 amqp-1.11.0
 ENV PHP_EXT_SWOOLE_VERSION 4.8.7
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
-ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
+ENV PHP_COMPOSER_REPO https://mirrors.cloud.tencent.com/composer/
 
 COPY repositories /etc/apk/repositories
 COPY php.ini /usr/local/etc/php/
