@@ -14,7 +14,7 @@ ENV PHP_DEPENDENCIES \
                     bzip2-dev libzip-dev
 ENV PHP_EXT_PECL_INSTALL \
                     mongodb-1.12.0 redis-5.3.7 mcrypt-1.0.4 amqp-1.11.0 rdkafka-5.0.2
-ENV PHP_EXT_SWOOLE_VERSION 4.8.7
+ENV PHP_EXT_SWOOLE_VERSION 4.8.8
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.cloud.tencent.com/composer/
 
