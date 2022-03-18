@@ -16,7 +16,7 @@ ENV PHP_EXT_PECL_INSTALL \
                     mongodb-1.12.0 redis-5.3.7 mcrypt-1.0.4 amqp-1.11.0 rdkafka-5.0.2
 ENV PHP_EXT_SWOOLE_VERSION 4.8.8
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
-ENV PHP_COMPOSER_REPO https://mirrors.cloud.tencent.com/composer/
+ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
 RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
   && apk add -U --no-cache tzdata $PHP_DEPENDENCIES \
@@ -36,7 +36,7 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
 # INSTALL PHP EXT
   && pecl install -o -f $PHP_EXT_PECL_INSTALL \
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
-  && docker-php-ext-install opcache bcmath bz2 gd iconv mysqli pdo pdo_mysql zip sockets pcntl \
+  && docker-php-ext-install opcache bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
   && docker-php-ext-enable redis mongodb mcrypt amqp swoole rdkafka \
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
