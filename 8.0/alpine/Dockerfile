@@ -18,10 +18,6 @@ ENV PHP_EXT_SWOOLE_VERSION 4.8.10
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
-COPY repositories /etc/apk/repositories
-COPY php.ini /usr/local/etc/php/
-COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
-
 RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
   && apk add -U --no-cache tzdata $PHP_DEPENDENCIES \
   && cp /usr/share/zoneinfo/$TZ /etc/localtime && date \
