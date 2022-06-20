@@ -11,7 +11,7 @@ ENV BUILD_DIR /www/build
 ENV PHP_DEPENDENCIES \
                     libmcrypt-dev rabbitmq-c-dev libpng-dev \
                     libwebp-dev libjpeg-turbo-dev libxpm-dev freetype-dev \
-                    bzip2-dev libzip-dev
+                    bzip2-dev libzip-dev libstdc++
 ENV PHP_EXT_PECL_INSTALL \
                     mongodb-1.13.0 redis-5.3.7 mcrypt-1.0.4 amqp-1.11.0
 ENV PHP_EXT_SWOOLE_VERSION 4.8.10
