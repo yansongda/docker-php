@@ -13,8 +13,8 @@ ENV PHP_DEPENDENCIES \
                     libwebp-dev libjpeg-turbo-dev libxpm-dev freetype-dev \
                     bzip2-dev libzip-dev libstdc++
 ENV PHP_EXT_PECL_INSTALL \
-                    mongodb-1.13.0 redis-5.3.7 mcrypt-1.0.4 amqp-1.11.0
-ENV PHP_EXT_SWOOLE_VERSION 4.8.10
+                    mongodb-1.13.0 redis-5.3.7 mcrypt-1.0.5 amqp-1.11.0
+ENV PHP_EXT_SWOOLE_VERSION 4.8.11
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 

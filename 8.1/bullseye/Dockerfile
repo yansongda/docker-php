@@ -14,8 +14,8 @@ ENV PHP_DEPENDENCIES \
                     zlib1g-dev libpng-dev libwebp-dev libjpeg-dev libxpm-dev libfreetype-dev \
                     libbz2-dev libzip-dev librabbitmq-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    mongodb-1.13.0 redis-5.3.7 mcrypt-1.0.4 amqp-1.11.0
-ENV PHP_EXT_SWOOLE_VERSION 4.8.10
+                    mongodb-1.13.0 redis-5.3.7 mcrypt-1.0.5 amqp-1.11.0
+ENV PHP_EXT_SWOOLE_VERSION 4.8.11
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
