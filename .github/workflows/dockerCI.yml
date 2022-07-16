@@ -22,6 +22,8 @@ jobs:
           - '7.4'
           - '8.0'
           - '8.1'
+        php-mode:
+          - fpm
         platform:
           - alpine
           - bullseye
@@ -30,16 +32,16 @@ jobs:
       uses: actions/checkout@v2
     - name: Build the docker image
       run: |
-        docker build -t yansongda/php-fpm -f ./${{ matrix.php-version }}/${{ matrix.platform }}/Dockerfile ./${{ matrix.php-version }}
+        docker build -t yansongda/php -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.platform }}/Dockerfile ./${{ matrix.php-version }}
     - name: Tag the image
       run: |
-        docker tag yansongda/php-fpm yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }}
-        docker tag yansongda/php-fpm registry.cn-shenzhen.aliyuncs.com/yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }}
+        docker tag yansongda/php yansongda/php:${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}
+        docker tag yansongda/php registry.cn-shenzhen.aliyuncs.com/yansongda/php:${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}
     - name: Push the image to docker registry
       run: |
         docker login --username yansongda -p ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
-        docker push yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }}
+        docker push yansongda/php:${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}
     - name: Push the image to aliyun registry
       run: |
         docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com -p ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
-        docker push registry.cn-shenzhen.aliyuncs.com/yansongda/php-fpm:${{ matrix.php-version }}-${{ matrix.platform }}
+        docker push registry.cn-shenzhen.aliyuncs.com/yansongda/php:${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}

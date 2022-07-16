@@ -1,4 +1,4 @@
-FROM php:8.0-fpm-bullseye
+FROM php:7.4-fpm-bullseye
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -9,12 +9,11 @@ ENV WORKING_DIR /www/software
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
-                    curl wget unzip \
-                    libmcrypt-dev libcurl4-openssl-dev libssl-dev \
-                    zlib1g-dev libpng-dev libwebp-dev libjpeg-dev libxpm-dev libfreetype-dev \
-                    libbz2-dev libzip-dev librabbitmq-dev
+                    curl wget unzip libcurl4-openssl-dev libwebp-dev libmcrypt-dev \
+                    libbz2-dev libpng-dev libxpm-dev librabbitmq-dev librdkafka-dev \
+                    libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    mongodb-1.13.0 redis-5.3.7 mcrypt-1.0.5 amqp-1.11.0
+                    mongodb-1.13.0 redis-5.3.7 mcrypt-1.0.4 amqp-1.11.0 rdkafka-5.0.2
 ENV PHP_EXT_SWOOLE_VERSION 4.8.11
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
@@ -31,14 +30,14 @@ RUN apt-get update \
   && ( \
         cd swoole \
         && phpize \
-        && ./configure --enable-openssl --with-openssl-dir=/usr/lib/x86_64-linux-gnu/ --enable-http2 --enable-swoole-json --enable-swoole-curl \
+        && ./configure --enable-openssl --enable-http2 --enable-swoole-json --enable-swoole-curl \
         && make -s -j$(nproc) && make install \
     ) \
 # INSTALL PHP EXT
   && pecl install -o -f $PHP_EXT_INSTALLED_PECL \
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
   && docker-php-ext-install opcache bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
-  && docker-php-ext-enable redis mongodb mcrypt amqp swoole \
+  && docker-php-ext-enable opcache redis mongodb mcrypt amqp swoole rdkafka \
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
@@ -53,6 +52,6 @@ RUN apt-get update \
 # After Build
 WORKDIR /www
 
-COPY sources.list /etc/apt/sources.list
+COPY ./bullseye/sources.list /etc/apt/sources.list
 COPY php.ini /usr/local/etc/php/
 COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf

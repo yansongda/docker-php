@@ -1,4 +1,4 @@
-FROM php:8.0-fpm-alpine3.16
+FROM php:8.1-fpm-alpine3.16
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -49,6 +49,6 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
 # After Build
 WORKDIR /www
 
-COPY repositories /etc/apk/repositories
+COPY ./alpine/repositories /etc/apk/repositories
 COPY php.ini /usr/local/etc/php/
 COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf

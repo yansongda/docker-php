@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-bullseye
+FROM php:8.0-fpm-bullseye
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -53,6 +53,6 @@ RUN apt-get update \
 # After Build
 WORKDIR /www
 
-COPY sources.list /etc/apt/sources.list
+COPY ./bullseye/sources.list /etc/apt/sources.list
 COPY php.ini /usr/local/etc/php/
 COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
