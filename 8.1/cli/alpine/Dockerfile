@@ -45,7 +45,7 @@ RUN set -ex \
     php8-pdo_sqlite \
     php8-phar \
     php8-posix \
-    php8-redis \
+    php-redis=8.1 \
     php8-sockets \
     php8-sodium \
     php8-zip \
@@ -53,7 +53,6 @@ RUN set -ex \
     php8-xml \
     php8-xmlreader \
     php8-bz2 \
-    php8-pecl-mcrypt \
     php8-pcntl \
     php8-opcache \
     && ln -sf /usr/bin/php8 /usr/bin/php \

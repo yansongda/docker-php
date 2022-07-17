@@ -14,7 +14,7 @@ ENV PHP_DEPENDENCIES \
                     zlib1g-dev libpng-dev libwebp-dev libjpeg-dev libxpm-dev \
                     libbz2-dev libzip-dev libfreetype-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    redis-5.3.7 mcrypt-1.0.5 xlswriter-1.5.2
+                    redis-5.3.7 xlswriter-1.5.2
 ENV PHP_EXT_SWOOLE_VERSION 4.8.11
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
@@ -38,7 +38,7 @@ RUN apt-get update \
   && pecl install -o -f $PHP_EXT_INSTALLED_PECL \
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
   && docker-php-ext-install opcache bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
-  && docker-php-ext-enable redis mcrypt xlswriter swoole \
+  && docker-php-ext-enable redis xlswriter swoole \
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \

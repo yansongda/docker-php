@@ -17,8 +17,6 @@ ADD https://php.hernandev.com/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rs
 
 RUN set -ex \
 # PHP
-    && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
-
     && echo "https://php.hernandev.com/v3.15/php-8.0" >> /etc/apk/repositories \
     && echo "@php https://php.hernandev.com/v3.15/php-8.0" >> /etc/apk/repositories \
     && apk update \
@@ -55,7 +53,6 @@ RUN set -ex \
     php8-xml \
     php8-xmlreader \
     php8-bz2 \
-    php8-pecl-mcrypt \
     php8-pcntl \
     php8-opcache \
     && ln -sf /usr/bin/php8 /usr/bin/php \

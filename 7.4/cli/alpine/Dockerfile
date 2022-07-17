@@ -53,7 +53,6 @@ RUN set -ex \
     php7-xml \
     php7-xmlreader \
     php7-bz2 \
-    php7-pecl-mcrypt \
     php7-pcntl \
     php7-opcache \
     && ln -sf /usr/bin/php7 /usr/bin/php \
