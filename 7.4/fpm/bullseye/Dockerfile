@@ -10,10 +10,10 @@ ENV WORKING_DIR /www/software
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
                     curl wget unzip libcurl4-openssl-dev libwebp-dev libmcrypt-dev \
-                    libbz2-dev libpng-dev libxpm-dev librabbitmq-dev librdkafka-dev \
+                    libbz2-dev libpng-dev libxpm-dev librabbitmq-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    mongodb-1.13.0 redis-5.3.7 mcrypt-1.0.4 amqp-1.11.0
+                    mongodb-1.13.0 redis-5.3.7 mcrypt-1.0.4 amqp-1.11.0 xlswriter-1.5.2
 ENV PHP_EXT_SWOOLE_VERSION 4.8.11
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
@@ -37,7 +37,7 @@ RUN apt-get update \
   && pecl install -o -f $PHP_EXT_INSTALLED_PECL \
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
   && docker-php-ext-install opcache bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
-  && docker-php-ext-enable opcache redis mongodb mcrypt amqp swoole rdkafka \
+  && docker-php-ext-enable opcache redis mongodb mcrypt amqp xlswriter swoole \
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
