@@ -62,6 +62,7 @@ RUN set -ex \
 # PHP ext
     && apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
     && apk add -U --no-cache tzdata $PHP_DEPENDENCIES \
+    && ln -s /usr/bin/pecl8 /usr/local/bin/pecl \
     && pecl install ${PHP_EXT_PECL_INSTALL} \
 # PHP ext-swoole
     && cd /tmp \
