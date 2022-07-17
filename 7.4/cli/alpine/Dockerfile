@@ -1,10 +1,10 @@
-FROM alpine:3.15
+FROM alpine:3.12
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
 # ENV for Global
 ENV TZ=Asia/Shanghai
-ENV DEPENDENCIES="autoconf dpkg-dev dpkg file g++ gcc libc-dev make php8-dev php8-pear pkgconf re2c pcre-dev pcre2-dev zlib-dev libtool automake libaio-dev openssl-dev curl-dev"
+ENV DEPENDENCIES="autoconf dpkg-dev dpkg file g++ gcc libc-dev make php7-dev php7-pear pkgconf re2c pcre-dev pcre2-dev zlib-dev libtool automake libaio-dev openssl-dev curl-dev"
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES libstdc++
@@ -17,8 +17,8 @@ ADD https://php.hernandev.com/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rs
 
 RUN set -ex \
 # PHP
-    && echo "https://php.hernandev.com/v3.15/php-8.1" >> /etc/apk/repositories \
-    && echo "@php https://php.hernandev.com/v3.15/php-8.1" >> /etc/apk/repositories \
+    && echo "https://php.hernandev.com/v3.12/php-7.4" >> /etc/apk/repositories \
+    && echo "@php https://php.hernandev.com/v3.12/php-7.4" >> /etc/apk/repositories \
     && apk update \
     && apk add --no-cache \
     # Install base packages ('ca-certificates' will install 'nghttp2-libs')
@@ -30,33 +30,33 @@ RUN set -ex \
     libressl \
     tzdata \
     pcre \
-    php8 \
-    php8-bcmath \
-    php8-curl \
-    php8-ctype \
-    php8-dom \
-    php8-gd \
-    php8-iconv \
-    php8-mbstring \
-    php8-mysqlnd \
-    php8-openssl \
-    php8-pdo \
-    php8-pdo_mysql \
-    php8-pdo_sqlite \
-    php8-phar \
-    php8-posix \
-    php8-redis \
-    php8-sockets \
-    php8-sodium \
-    php8-zip \
-    php8-zlib \
-    php8-xml \
-    php8-xmlreader \
-    php8-bz2 \
-    php8-pecl-mcrypt \
-    php8-pcntl \
-    php8-opcache \
-    && ln -sf /usr/bin/php8 /usr/bin/php \
+    php7 \
+    php7-bcmath \
+    php7-curl \
+    php7-ctype \
+    php7-dom \
+    php7-gd \
+    php7-iconv \
+    php7-mbstring \
+    php7-mysqlnd \
+    php7-openssl \
+    php7-pdo \
+    php7-pdo_mysql \
+    php7-pdo_sqlite \
+    php7-phar \
+    php7-posix \
+    php7-redis \
+    php7-sockets \
+    php7-sodium \
+    php7-zip \
+    php7-zlib \
+    php7-xml \
+    php7-xmlreader \
+    php7-bz2 \
+    php7-pecl-mcrypt \
+    php7-pcntl \
+    php7-opcache \
+    && ln -sf /usr/bin/php7 /usr/bin/php \
     && php -v \
     && php -m \
 # PHP ext
@@ -69,20 +69,20 @@ RUN set -ex \
     && ls -alh \
     && mkdir -p swoole \
     && tar -xf swoole.tar.gz -C swoole --strip-components=1 \
-    && ln -s /usr/bin/phpize8 /usr/local/bin/phpize \
-    && ln -s /usr/bin/php-config8 /usr/local/bin/php-config \
+    && ln -s /usr/bin/phpize7 /usr/local/bin/phpize \
+    && ln -s /usr/bin/php-config7 /usr/local/bin/php-config \
     && ( \
         cd swoole \
         && phpize \
         && ./configure --enable-openssl --enable-http2 --enable-swoole-curl --enable-swoole-json \
         && make -s -j$(nproc) && make install \
     ) \
-    && echo "opcache.enable_cli = 'On'" >> /etc/php8/conf.d/00_opcache.ini \
-    && echo "extension=swoole.so" > /etc/php8/conf.d/50_swoole.ini \
+    && echo "opcache.enable_cli = 'On'" >> /etc/php7/conf.d/00_opcache.ini \
+    && echo "extension=swoole.so" > /etc/php7/conf.d/50_swoole.ini \
     && php --ri swoole \
     && php --ri Zend\ OPcache \
 # PHP ext-xlswriter
-    && echo "extension=xlswriter.so" > /etc/php8/conf.d/50_xlswriter.ini \
+    && echo "extension=xlswriter.so" > /etc/php7/conf.d/50_xlswriter.ini \
     && php --ri xlswriter \
 # Composer 
     && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \

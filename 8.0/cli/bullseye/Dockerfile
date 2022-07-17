@@ -46,8 +46,7 @@ RUN apt-get update \
   && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
   && apt-get -y remove $DEPENDENCIES \
   && apt-get purge -y --auto-remove \
-  && rm -rf /var/lib/apt/lists/* \
-  && rm -rf /tmp/pear ~/.pearrc \
+  && rm -rf /var/lib/apt/lists/* /tmp/pear ~/.pearrc \
   && cd $WORKING_DIR && cd .. && rm -rf $WORKING_DIR
 
 # After Build

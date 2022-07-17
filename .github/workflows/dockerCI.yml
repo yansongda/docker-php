@@ -24,6 +24,7 @@ jobs:
           - '8.1'
         php-mode:
           - fpm
+          - cli
         platform:
           - alpine
           - bullseye
@@ -39,9 +40,11 @@ jobs:
         docker tag yansongda/php registry.cn-shenzhen.aliyuncs.com/yansongda/php:${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}
     - name: Push the image to docker registry
       run: |
-        docker login --username yansongda -p ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
+        echo ${{ secrets.DOCKERHUB_ACCESSTOKEN }} | docker login --username yansongda --password-stdin
         docker push yansongda/php:${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}
+        docker logout
     - name: Push the image to aliyun registry
       run: |
-        docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com -p ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
+        echo ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }} | docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com --password-stdin
         docker push registry.cn-shenzhen.aliyuncs.com/yansongda/php:${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}
+        docker logout

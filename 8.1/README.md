@@ -1,6 +1,6 @@
 ## ext && version
 
-- amqp
+- amqp(fpm)
 - bcmath
 - bz2 
 - gd 
@@ -10,9 +10,8 @@
 - pdo
 - pdo_mysql
 - zip
-- mongodb
+- mongodb(fpm)
 - redis
-- memcached
 - swoole
 - opcache
 - sockets

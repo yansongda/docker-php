@@ -1,12 +1,12 @@
-# docker-php-fpm
-Docker with php-fpm
+# docker-php
+Docker with php include php and cli
 
 ## Usage
 ### China Region
-docker pull registry.cn-shenzhen.aliyuncs.com/yansongda/php-fpm
+docker pull registry.cn-shenzhen.aliyuncs.com/yansongda/php
 
 ### Docker Hub
-docker pull yansongda/php-fpm
+docker pull yansongda/php
 
 ## Added ext
 

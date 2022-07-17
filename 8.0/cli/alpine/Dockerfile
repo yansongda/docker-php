@@ -17,8 +17,8 @@ ADD https://php.hernandev.com/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rs
 
 RUN set -ex \
 # PHP
-    && echo "https://php.hernandev.com/v3.15/php-8.1" >> /etc/apk/repositories \
-    && echo "@php https://php.hernandev.com/v3.15/php-8.1" >> /etc/apk/repositories \
+    && echo "https://php.hernandev.com/v3.15/php-8.0" >> /etc/apk/repositories \
+    && echo "@php https://php.hernandev.com/v3.15/php-8.0" >> /etc/apk/repositories \
     && apk update \
     && apk add --no-cache \
     # Install base packages ('ca-certificates' will install 'nghttp2-libs')

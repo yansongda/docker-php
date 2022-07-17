@@ -43,12 +43,12 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
 # Clean
   && apk del .build-deps \
-  && rm -rf /tmp/pear ~/.pearrc \
-  && cd && rm -rf $BUILD_DIR
+  && rm -rf /tmp/* ~/.pearrc /var/cache/apk/* \
+  && cd && rm -rf $BUILD_DIR \
+  && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 
 # After Build
 WORKDIR /www
 
-COPY ./alpine/repositories /etc/apk/repositories
 COPY php.ini /usr/local/etc/php/
 COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
