@@ -66,7 +66,7 @@ RUN set -ex \
     && pecl install ${PHP_EXT_PECL_INSTALL} \
 # PHP ext-swoole
     && cd /tmp \
-    && curl -SL "https://github.com/swoole/swoole-src/archive/${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o swoole.tar.gz \
+    && curl -SL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o swoole.tar.gz \
     && ls -alh \
     && mkdir -p swoole \
     && tar -xf swoole.tar.gz -C swoole --strip-components=1 \
