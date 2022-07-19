@@ -80,9 +80,10 @@ RUN set -ex \
     ) \
     && echo "opcache.enable_cli = 'On'" >> /etc/php7/conf.d/00_opcache.ini \
     && echo "extension=swoole.so" > /etc/php7/conf.d/50_swoole.ini \
-    && echo "post_max_size = 100M" >> /etc/php8/conf.d/00_default.ini \
-    && echo "upload_max_filesize = 100M" >> /etc/php8/conf.d/00_default.ini \
-    && echo "date.timezone = Asia/Shanghai" >> /etc/php8/conf.d/00_default.ini \
+    && echo "memory_limit = 512M" > /etc/php7/conf.d/00_default.ini \
+    && echo "post_max_size = 100M" >> /etc/php7/conf.d/00_default.ini \
+    && echo "upload_max_filesize = 100M" >> /etc/php7/conf.d/00_default.ini \
+    && echo "date.timezone = Asia/Shanghai" >> /etc/php7/conf.d/00_default.ini \
     && php --ri swoole \
     && php --ri Zend\ OPcache \
 # PHP ext-xlswriter
