@@ -5,23 +5,24 @@ LABEL maintainer="yansongda <me@yansongda.cn>"
 # ENV for Global
 ENV TZ=Asia/Shanghai
 ENV DEPENDENCIES $PHPIZE_DEPS curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev
-ENV BUILD_DIR /www/build
+ENV BUILD_DIR /tmp
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
-                    libmcrypt-dev rabbitmq-c-dev libpng-dev \
-                    libwebp-dev libjpeg-turbo-dev libxpm-dev freetype-dev \
-                    bzip2-dev libzip-dev libstdc++
+                    rabbitmq-c-dev libpng-dev \
+                    libwebp-dev libjpeg-turbo-dev libxpm-dev \
+                    bzip2-dev libzip-dev freetype-dev
 ENV PHP_EXT_PECL_INSTALL \
                     mongodb-1.13.0 redis-5.3.7 amqp-1.11.0 xlswriter-1.5.2
 ENV PHP_EXT_SWOOLE_VERSION 4.8.11
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
+# Prepare
 RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
   && apk add -U --no-cache tzdata $PHP_DEPENDENCIES \
-  && cp /usr/share/zoneinfo/$TZ /etc/localtime && date \
-# INSTALL PHP EXT-SWOOLE
+  && pecl install -o -f $PHP_EXT_PECL_INSTALL \
+# Swoole
   && mkdir -p $BUILD_DIR && cd $BUILD_DIR \
   && curl -SL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o swoole.tar.gz \
   && ls -alh \
@@ -33,11 +34,11 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
         && ./configure --enable-openssl --enable-http2 --enable-swoole-json --enable-swoole-curl \
         && make -s -j$(nproc) && make install \
     ) \
-# INSTALL PHP EXT
-  && pecl install -o -f $PHP_EXT_PECL_INSTALL \
+# Extentions
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
   && docker-php-ext-install opcache bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
-  && docker-php-ext-enable redis mongodb amqp xlswriter swoole \
+  && docker-php-ext-enable mongodb redis amqp xlswriter swoole \
+# Composer
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
@@ -45,7 +46,10 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
   && apk del .build-deps \
   && rm -rf /tmp/* ~/.pearrc /var/cache/apk/* \
   && cd && rm -rf $BUILD_DIR \
-  && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
+## For me
+  && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
+  && cp /usr/share/zoneinfo/$TZ /etc/localtime && date \
+  && php --ri swoole && php --ri xmlwriter
 
 # After Build
 WORKDIR /www

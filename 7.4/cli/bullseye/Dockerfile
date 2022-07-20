@@ -5,12 +5,12 @@ LABEL maintainer="yansongda <me@yansongda.cn>"
 # ENV for Global
 ENV TZ=Asia/Shanghai
 ENV DEPENDENCIES gnupg git gcc g++
-ENV WORKING_DIR /www/software
+ENV WORKING_DIR /tmp
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
                     curl wget unzip libcurl4-openssl-dev libwebp-dev \
-                    libbz2-dev libpng-dev libxpm-dev libmcrypt-dev \
+                    libbz2-dev libpng-dev libxpm-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
                     redis-5.3.7 xlswriter-1.5.2
@@ -18,10 +18,11 @@ ENV PHP_EXT_SWOOLE_VERSION 4.8.11
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
-# INSTALL PHP
+# Prepare
 RUN apt-get update \
   && apt-get install -y $PHP_DEPENDENCIES $DEPENDENCIES \
-# INSTALL PHP EXT-SWOOLE
+  && pecl install -o -f $PHP_EXT_INSTALLED_PECL \
+# Swoole
   && mkdir -p $WORKING_DIR && cd $WORKING_DIR \
   && curl -SL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o swoole.tar.gz \
   && ls -alh \
@@ -33,20 +34,21 @@ RUN apt-get update \
         && ./configure --enable-openssl --enable-http2 --enable-swoole-json --enable-swoole-curl \
         && make -s -j$(nproc) && make install \
     ) \
-# INSTALL PHP EXT
-  && pecl install -o -f $PHP_EXT_INSTALLED_PECL \
+# Extentions
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
   && docker-php-ext-install opcache bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
   && docker-php-ext-enable opcache redis xlswriter swoole \
+# Composer
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
   && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
-# CLEAN
-  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+# Clean
   && apt-get -y remove $DEPENDENCIES \
   && apt-get purge -y --auto-remove \
-  && rm -rf /var/lib/apt/lists/* /tmp/pear ~/.pearrc \
-  && cd $WORKING_DIR && cd .. && rm -rf $WORKING_DIR
+  && rm -rf /var/lib/apt/lists/* /tmp/pear ~/.pearrc && cd $WORKING_DIR && cd .. && rm -rf $WORKING_DIR \
+# For me
+  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+  && php --ri swoole && php --ri xmlwriter
 
 # After Build
 WORKDIR /www

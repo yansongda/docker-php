@@ -1,103 +1,57 @@
-FROM alpine:3.15
+FROM php:8.1-cli-alpine3.16
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
 # ENV for Global
 ENV TZ=Asia/Shanghai
-ENV DEPENDENCIES="autoconf dpkg-dev dpkg file g++ gcc libc-dev make php8-dev php8-pear pkgconf re2c pcre-dev pcre2-dev zlib-dev libtool automake libaio-dev openssl-dev curl-dev"
+ENV DEPENDENCIES $PHPIZE_DEPS curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev
+ENV BUILD_DIR /tmp
 
 # ENV for PHP
-ENV PHP_DEPENDENCIES libstdc++
-ENV PHP_EXT_PECL_INSTALL xlswriter-1.5.2
+ENV PHP_DEPENDENCIES \
+                    libpng-dev libzip-dev freetype-dev \
+                    libwebp-dev libjpeg-turbo-dev libxpm-dev \
+                    bzip2-dev
+ENV PHP_EXT_PECL_INSTALL \
+                    redis-5.3.7 xlswriter-1.5.2
 ENV PHP_EXT_SWOOLE_VERSION 4.8.11
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
-ADD https://php.hernandev.com/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rsa.pub
-
-RUN set -ex \
-# PHP
-    && echo "https://php.hernandev.com/v3.15/php-8.1" >> /etc/apk/repositories \
-    && echo "@php https://php.hernandev.com/v3.15/php-8.1" >> /etc/apk/repositories \
-    && apk update \
-    && apk add --no-cache \
-    # Install base packages ('ca-certificates' will install 'nghttp2-libs')
-    ca-certificates \
-    curl \
-    wget \
-    tar \
-    xz \
-    libressl \
-    tzdata \
-    pcre \
-    php8 \
-    php8-bcmath \
-    php8-curl \
-    php8-ctype \
-    php8-dom \
-    php8-gd \
-    php8-iconv \
-    php8-mbstring \
-    php8-mysqlnd \
-    php8-openssl \
-    php8-pdo \
-    php8-pdo_mysql \
-    php8-pdo_sqlite \
-    php8-phar \
-    php8-posix \
-    php-redis=8.1 \
-    php8-sockets \
-    php8-sodium \
-    php8-zip \
-    php8-zlib \
-    php8-xml \
-    php8-xmlreader \
-    php8-bz2 \
-    php8-pcntl \
-    php8-opcache \
-    && ln -sf /usr/bin/php8 /usr/bin/php \
-    && php -v \
-    && php -m \
-# PHP ext
-    && apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
-    && apk add -U --no-cache tzdata $PHP_DEPENDENCIES \
-    && pecl install ${PHP_EXT_PECL_INSTALL} \
-# PHP ext-swoole
-    && cd /tmp \
-    && curl -SL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o swoole.tar.gz \
-    && ls -alh \
-    && mkdir -p swoole \
-    && tar -xf swoole.tar.gz -C swoole --strip-components=1 \
-    && ln -s /usr/bin/phpize8 /usr/local/bin/phpize \
-    && ln -s /usr/bin/php-config8 /usr/local/bin/php-config \
-    && ( \
+# Prepare
+RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
+  && apk add -U --no-cache tzdata $PHP_DEPENDENCIES \
+  && pecl install -o -f $PHP_EXT_PECL_INSTALL \
+# Swoole
+  && mkdir -p $BUILD_DIR && cd $BUILD_DIR \
+  && curl -SL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o swoole.tar.gz \
+  && ls -alh \
+  && mkdir -p swoole \
+  && tar -xf swoole.tar.gz -C swoole --strip-components=1 \
+  && ( \
         cd swoole \
         && phpize \
-        && ./configure --enable-openssl --enable-http2 --enable-swoole-curl --enable-swoole-json \
+        && ./configure --enable-openssl --enable-http2 --enable-swoole-json --enable-swoole-curl \
         && make -s -j$(nproc) && make install \
     ) \
-    && echo "opcache.enable_cli = 'On'" >> /etc/php8/conf.d/00_opcache.ini \
-    && echo "extension=swoole.so" > /etc/php8/conf.d/50_swoole.ini \
-    && echo "memory_limit = 512M" > /etc/php8/conf.d/00_default.ini \
-    && echo "post_max_size = 100M" >> /etc/php8/conf.d/00_default.ini \
-    && echo "upload_max_filesize = 100M" >> /etc/php8/conf.d/00_default.ini \
-    && echo "date.timezone = Asia/Shanghai" >> /etc/php8/conf.d/00_default.ini \
-    && php --ri swoole \
-    && php --ri Zend\ OPcache \
-# PHP ext-xlswriter
-    && echo "extension=xlswriter.so" > /etc/php8/conf.d/50_xlswriter.ini \
-    && php --ri xlswriter \
-# Composer 
-    && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
-    && chmod a+x /usr/local/bin/composer \
-    && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
-# For me
-    && cp /usr/share/zoneinfo/$TZ /etc/localtime && date \
-    && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
+# Extentions
+  && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
+  && docker-php-ext-install opcache bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
+  && docker-php-ext-enable redis xlswriter swoole \
+# Composer
+  && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
+  && chmod a+x /usr/local/bin/composer \
+  && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
 # Clean
-    && apk del .build-deps \
-    && apk del --purge *-dev \
-    && rm -rf /var/cache/apk/* /tmp/* /usr/share/man /usr/share/php8
+  && apk del .build-deps \
+  && rm -rf /tmp/* ~/.pearrc /var/cache/apk/* \
+  && cd && rm -rf $BUILD_DIR \
+## For me
+  && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
+  && cp /usr/share/zoneinfo/$TZ /etc/localtime && date \
+  && php --ri swoole && php --ri xmlwriter
 
 # After Build
 WORKDIR /www
+
+COPY php.ini /usr/local/etc/php/
