@@ -11,7 +11,7 @@ ENV BUILD_DIR /tmp
 ENV PHP_DEPENDENCIES \
                     libpng-dev libzip-dev freetype-dev \
                     libwebp-dev libjpeg-turbo-dev libxpm-dev \
-                    bzip2-dev
+                    bzip2-dev libstdc++
 ENV PHP_EXT_PECL_INSTALL \
                     redis-5.3.7 xlswriter-1.5.2
 ENV PHP_EXT_SWOOLE_VERSION 4.8.11
@@ -49,7 +49,7 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
 ## For me
   && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
   && cp /usr/share/zoneinfo/$TZ /etc/localtime && date \
-  && php --ri swoole && php --ri xmlwriter
+  && php --ri swoole && php --ri xlswriter
 
 # After Build
 WORKDIR /www

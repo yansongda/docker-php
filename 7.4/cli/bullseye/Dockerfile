@@ -48,7 +48,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* /tmp/pear ~/.pearrc && cd $WORKING_DIR && cd .. && rm -rf $WORKING_DIR \
 # For me
   && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-  && php --ri swoole && php --ri xmlwriter
+  && php --ri swoole && php --ri xlswriter
 
 # After Build
 WORKDIR /www

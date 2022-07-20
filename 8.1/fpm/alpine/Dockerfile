@@ -9,7 +9,7 @@ ENV BUILD_DIR /tmp
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
-                    rabbitmq-c-dev libpng-dev \
+                    libstdc++ rabbitmq-c-dev libpng-dev \
                     libwebp-dev libjpeg-turbo-dev libxpm-dev \
                     bzip2-dev libzip-dev freetype-dev
 ENV PHP_EXT_PECL_INSTALL \
@@ -49,7 +49,7 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
 ## For me
   && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
   && cp /usr/share/zoneinfo/$TZ /etc/localtime && date \
-  && php --ri swoole && php --ri xmlwriter
+  && php --ri swoole && php --ri xlswriter
 
 # After Build
 WORKDIR /www
