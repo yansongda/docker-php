@@ -31,7 +31,7 @@ RUN apt-get update \
   && ( \
         cd swoole \
         && phpize \
-        && ./configure --enable-openssl --enable-http2 --enable-swoole-json --enable-swoole-curl \
+        && ./configure --enable-openssl --enable-swoole-curl \
         && make -s -j$(nproc) && make install \
     ) \
 # Extentions
