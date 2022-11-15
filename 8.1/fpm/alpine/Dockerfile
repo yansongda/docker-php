@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-alpine3.16
+FROM php:8.1-fpm-alpine
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -13,8 +13,8 @@ ENV PHP_DEPENDENCIES \
                     libwebp-dev libjpeg-turbo-dev libxpm-dev \
                     bzip2-dev libzip-dev freetype-dev
 ENV PHP_EXT_PECL_INSTALL \
-                    mongodb-1.13.0 redis-5.3.7 amqp-1.11.0 xlswriter-1.5.2
-ENV PHP_EXT_SWOOLE_VERSION 5.0.0
+                    mongodb-1.14.2 redis-5.3.7 amqp-1.11.0 xlswriter-1.5.2
+ENV PHP_EXT_SWOOLE_VERSION 5.0.1
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 

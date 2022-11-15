@@ -1,4 +1,4 @@
-FROM php:8.1-cli-alpine3.16
+FROM php:8.1-cli-alpine
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -14,7 +14,7 @@ ENV PHP_DEPENDENCIES \
                     bzip2-dev libstdc++
 ENV PHP_EXT_PECL_INSTALL \
                     redis-5.3.7 xlswriter-1.5.2
-ENV PHP_EXT_SWOOLE_VERSION 5.0.0
+ENV PHP_EXT_SWOOLE_VERSION 5.0.1
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
