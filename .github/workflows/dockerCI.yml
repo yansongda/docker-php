@@ -44,9 +44,9 @@ jobs:
         fi
 
         echo $tag
-     - name: Set up QEMU
-       uses: docker/setup-qemu-action@v2
-       platforms: arm64
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+      platforms: arm64
     - name: Build the docker image
       run: |
         docker buildx ls
