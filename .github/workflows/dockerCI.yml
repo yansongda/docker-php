@@ -10,10 +10,11 @@ on:
 env:
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
   ALIYUN_IMAGE_TOKEN: ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
+  TAG: ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
 
 jobs:
   build:
-    name: build ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}
+    name: build ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -25,26 +26,33 @@ jobs:
         php-mode:
           - fpm
           - cli
-        platform:
+        system:
           - alpine
           - bullseye
+        platform:
+          - linux/arm64
+          - linux/amd64
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Build the docker image
       run: |
-        docker build -t yansongda/php -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.platform }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
+        docker buildx build -t yansongda/php --platform ${{ matrix.platform }}-f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
     - name: Tag the image
       run: |
-        docker tag yansongda/php yansongda/php:${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}
-        docker tag yansongda/php registry.cn-shenzhen.aliyuncs.com/yansongda/php:${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}
+        if [ "linux/arm64" == ${{ matrix.platform }}]; then
+          tag=arm64-${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+        fi
+
+        docker tag yansongda/php yansongda/php:$tag
+        docker tag yansongda/php registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
     - name: Push the image to docker registry
       run: |
-        echo ${{ secrets.DOCKERHUB_ACCESSTOKEN }} | docker login --username yansongda --password-stdin
-        docker push yansongda/php:${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}
+        echo $DOCKERHUB_ACCESSTOKEN | docker login --username yansongda --password-stdin
+        docker push yansongda/php:$tag
         docker logout
     - name: Push the image to aliyun registry
       run: |
-        echo ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }} | docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com --password-stdin
-        docker push registry.cn-shenzhen.aliyuncs.com/yansongda/php:${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.platform }}
+        echo $ALIYUN_IMAGE_ACCESSTOKEN | docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com --password-stdin
+        docker push registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
         docker logout
