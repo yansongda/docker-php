@@ -39,8 +39,8 @@ jobs:
         arm64='linux/arm64'
         tag=${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
 
-        if (( $arm64 == "${{ matrix.platform }}" )); then
-          tag="arm64-"$tag
+        if (( $arm64 == '${{ matrix.platform }}' )); then
+          tag='arm64-'$tag
         fi
 
         echo $tag
