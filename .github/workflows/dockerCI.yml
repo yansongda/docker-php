@@ -39,14 +39,15 @@ jobs:
         arm64='linux/arm64'
         tag=${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
 
-        if (( $arm64 == '${{ matrix.platform }}' )); then
+        if [ $arm64 == ${{ matrix.platform }} ]; then
           tag='arm64-'$tag
         fi
 
         echo $tag
     - name: Build the docker image
       run: |
-        docker buildx build -t yansongda/php --platform=${{ matrix.platform }} -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
+        docker buildx ls
+        docker buildx build -t yansongda/php --platform ${{ matrix.platform }} -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
     - name: Tag the image
       run: |
         docker tag yansongda/php yansongda/php:$tag
