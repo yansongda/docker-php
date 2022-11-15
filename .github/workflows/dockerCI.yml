@@ -59,11 +59,11 @@ jobs:
         docker tag yansongda/php registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
     - name: Push the image to docker registry
       run: |
-        echo $DOCKERHUB_ACCESSTOKEN | docker login --username yansongda --password-stdin
+        echo $DOCKERHUB_TOKEN | docker login --username yansongda --password-stdin
         docker push yansongda/php:$tag
         docker logout
     - name: Push the image to aliyun registry
       run: |
-        echo $ALIYUN_IMAGE_ACCESSTOKEN | docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com --password-stdin
+        echo $ALIYUN_IMAGE_TOKEN | docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com --password-stdin
         docker push registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
         docker logout
