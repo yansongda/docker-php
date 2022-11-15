@@ -36,11 +36,11 @@ jobs:
       uses: actions/checkout@v3
     - name: Recognize tag
       run: |
-        arm64="linux/arm64"
+        arm64='linux/arm64'
         tag=${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
 
         if (( $arm64 == ${{ matrix.platform }} )); then
-          tag=arm64-${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+          tag='arm64-'$tag
         fi
 
         echo $tag
