@@ -10,7 +10,6 @@ on:
 env:
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
   ALIYUN_IMAGE_TOKEN: ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
-  TAG: ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
 
 jobs:
   build:
@@ -35,15 +34,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+    - name: Recognize tag
+      run: |
+        tag=${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+
+        if [ "linux/arm64" == ${{ matrix.platform }}]; then
+          tag=arm64-${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+        fi
     - name: Build the docker image
       run: |
         docker buildx build -t yansongda/php --platform ${{ matrix.platform }}-f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
     - name: Tag the image
       run: |
-        if [ "linux/arm64" == ${{ matrix.platform }}]; then
-          tag=arm64-${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
-        fi
-
         docker tag yansongda/php yansongda/php:$tag
         docker tag yansongda/php registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
     - name: Push the image to docker registry
