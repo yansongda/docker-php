@@ -13,7 +13,7 @@ env:
 
 jobs:
   build:
-    name: build ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+    name: build ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}-${{ matrix.platform }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -38,12 +38,14 @@ jobs:
       run: |
         tag=${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
 
-        if [ "linux/arm64" == ${{ matrix.platform }}]; then
+        if (( "linux/arm64" == ${{ matrix.platform }} )); then
           tag=arm64-${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
         fi
+
+        echo $tag
     - name: Build the docker image
       run: |
-        docker buildx build -t yansongda/php --platform ${{ matrix.platform }}-f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
+        docker buildx build -t yansongda/php --platform=${{ matrix.platform }}-f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
     - name: Tag the image
       run: |
         docker tag yansongda/php yansongda/php:$tag
