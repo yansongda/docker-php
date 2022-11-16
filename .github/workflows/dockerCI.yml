@@ -43,6 +43,7 @@ jobs:
         platforms: arm64
     - name: Build the docker image
       run: |
+        docker buildx create --use --name mybuilder --driver docker-container
         docker buildx ls
         docker buildx build -t yansongda/php --platform linux/arm64,linux/amd64 -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
     - name: Tag the image
