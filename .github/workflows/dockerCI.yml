@@ -13,7 +13,7 @@ env:
 
 jobs:
   build:
-    name: build ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+    name: Image ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}-${{ matrix.platform }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -28,12 +28,16 @@ jobs:
         system:
           - alpine
           - bullseye
+        platform:
+          - linux/arm64
+          - linux/amd64
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Recognize tag
       run: |
-        tag=${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+        platform=$(echo ${{ matrix.platform }} | sed 's/linux\///g')
+        tag=$platform'-'${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
 
         echo $tag
         echo "tag=$tag" >> $GITHUB_ENV
@@ -43,9 +47,8 @@ jobs:
         platforms: arm64
     - name: Build the docker image
       run: |
-        docker buildx create --use --name mybuilder --driver docker-container
         docker buildx ls
-        docker buildx build -t yansongda/php --platform linux/arm64,linux/amd64 -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
+        docker buildx build -t yansongda/php --platform ${{ matrix.platform }} -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
     - name: Tag the image
       run: |
         docker tag yansongda/php yansongda/php:$tag
