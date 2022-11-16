@@ -10,6 +10,7 @@ on:
 env:
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
   ALIYUN_IMAGE_TOKEN: ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
+  PLATFORMS: "linux/arm64 linux/amd64"
 
 jobs:
   build:
@@ -29,37 +30,86 @@ jobs:
           - alpine
           - bullseye
         platform:
-          - linux/arm64
           - linux/amd64
+          - linux/arm64
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Recognize tag
-      run: |
-        platform=$(echo ${{ matrix.platform }} | sed 's/linux\///g')
-        tag=$platform'-'${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Recognize tag
+        run: |
+          platform=$(echo ${{ matrix.platform }} | sed 's/linux\///g')
+          tag=$platform'-'${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
 
-        echo $tag
-        echo "tag=$tag" >> $GITHUB_ENV
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-      with:
-        platforms: arm64
-    - name: Build the docker image
-      run: |
-        docker buildx ls
-        docker buildx build -t yansongda/php --platform ${{ matrix.platform }} -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
-    - name: Tag the image
-      run: |
-        docker tag yansongda/php yansongda/php:$tag
-        docker tag yansongda/php registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
-    - name: Push the image to docker registry
-      run: |
-        echo $DOCKERHUB_TOKEN | docker login --username yansongda --password-stdin
-        docker push yansongda/php:$tag
-        docker logout
-    - name: Push the image to aliyun registry
-      run: |
-        echo $ALIYUN_IMAGE_TOKEN | docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com --password-stdin
-        docker push registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
-        docker logout
+          echo $tag
+          echo "tag=$tag" >> $GITHUB_ENV
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: arm64
+      - name: Build the docker image
+        run: |
+          docker buildx ls
+          docker buildx build -t yansongda/php --platform ${{ matrix.platform }} -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
+      - name: Tag the image
+        run: |
+          docker tag yansongda/php yansongda/php:$tag
+          docker tag yansongda/php registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
+      - name: Push the image to docker registry
+        run: |
+          echo $DOCKERHUB_TOKEN | docker login --username yansongda --password-stdin
+          docker push yansongda/php:$tag
+          docker logout
+      - name: Push the image to aliyun registry
+        run: |
+          echo $ALIYUN_IMAGE_TOKEN | docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com --password-stdin
+          docker push registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
+          docker logout
+  manifest:
+    name: Manifest ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - '7.4'
+          - '8.0'
+          - '8.1'
+        php-mode:
+          - fpm
+          - cli
+        system:
+          - alpine
+          - bullseye
+    steps:
+      - name: Recognize manifest
+        run: |
+          tag=${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+
+          echo $tag
+          echo "tag=$tag" >> $GITHUB_ENV
+      - name: Tag the manifest
+        run: |
+          list=$(echo $PLATFORMS | sed 's/linux\///g')
+
+          hub=''
+          aliyun=''
+          for platform in $list;  
+          do  
+            hub=$hub'yansongda/php:'$platform-$tag' '
+            aliyun=$aliyun'registry.cn-shenzhen.aliyuncs.com/yansongda/php:'$platform'-'$tag' '
+          done
+
+          docker manifest create yansongda/php:$tag $hub
+          docker manifest create registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag $aliyun
+      - name: Push the manifest to docker registry
+        run: |
+          echo $DOCKERHUB_TOKEN | docker login --username yansongda --password-stdin
+          docker manifest push yansongda/php:$tag
+          docker logout
+      - name: Push the manifest to aliyun registry
+        run: |
+          echo $ALIYUN_IMAGE_TOKEN | docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com --password-stdin
+          docker manifest push registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
+          docker logout
