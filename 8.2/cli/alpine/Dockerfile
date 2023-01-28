@@ -11,7 +11,7 @@ ENV BUILD_DIR /tmp
 ENV PHP_DEPENDENCIES \
                     libpng-dev libzip-dev freetype-dev \
                     libwebp-dev libjpeg-turbo-dev libxpm-dev \
-                    bzip2-dev libstdc++
+                    bzip2-dev libstdc++ linux-headers
 ENV PHP_EXT_PECL_INSTALL \
                     redis-5.3.7 xlswriter-1.5.2
 ENV PHP_EXT_SWOOLE_VERSION 5.0.1

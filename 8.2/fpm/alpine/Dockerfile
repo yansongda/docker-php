@@ -11,7 +11,7 @@ ENV BUILD_DIR /tmp
 ENV PHP_DEPENDENCIES \
                     libstdc++ rabbitmq-c-dev libpng-dev \
                     libwebp-dev libjpeg-turbo-dev libxpm-dev \
-                    bzip2-dev libzip-dev freetype-dev
+                    bzip2-dev libzip-dev freetype-dev linux-headers
 ENV PHP_EXT_PECL_INSTALL \
                     mongodb-1.15.0 redis-5.3.7 amqp-1.11.0 xlswriter-1.5.2
 ENV PHP_EXT_SWOOLE_VERSION 5.0.1
