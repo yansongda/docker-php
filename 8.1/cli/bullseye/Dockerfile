@@ -13,8 +13,8 @@ ENV PHP_DEPENDENCIES \
                     libbz2-dev libpng-dev libxpm-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    redis-5.3.7 xlswriter-1.5.2
-ENV PHP_EXT_SWOOLE_VERSION 5.0.1
+                    redis-5.3.7 xlswriter-1.5.4
+ENV PHP_EXT_SWOOLE_VERSION 5.0.2
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
