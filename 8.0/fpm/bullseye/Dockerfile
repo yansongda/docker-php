@@ -13,10 +13,9 @@ ENV PHP_DEPENDENCIES \
                     libbz2-dev libpng-dev libxpm-dev librabbitmq-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    mongodb-1.14.2 redis-5.3.7 amqp-1.11.0 xlswriter-1.5.4
-ENV PHP_EXT_SWOOLE_VERSION 5.0.3
+                    redis-6.0.1 xlswriter-1.5.5 mongodb-1.16.2 amqp-2.1.0
+ENV PHP_EXT_SWOOLE_VERSION 5.1.0
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
-ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
 # Prepare
 RUN apt-get update \
@@ -41,7 +40,6 @@ RUN apt-get update \
 # Composer
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
-  && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
 # Clean
   && apt-get -y remove $DEPENDENCIES \
   && apt-get purge -y --auto-remove \
