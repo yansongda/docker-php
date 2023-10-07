@@ -5,7 +5,7 @@ on:
     branchs:
       - master
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: '0 0 0 * 1'
 
 env:
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
@@ -81,9 +81,6 @@ jobs:
         system:
           - alpine
           - bullseye
-        platform:
-          - linux/amd64
-          - linux/arm64
     env:
       PLATFORMS: "linux/arm64 linux/amd64"
     steps:
