@@ -5,7 +5,7 @@ on:
     branchs:
       - master
   schedule:
-    - cron: '0 0 0 * 1'
+    - cron: '0 0 * * 1'
 
 env:
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
