@@ -14,9 +14,8 @@ ENV PHP_DEPENDENCIES \
                     bzip2-dev libstdc++
 ENV PHP_EXT_PECL_INSTALL \
                     redis-5.3.7 xlswriter-1.5.4
-ENV PHP_EXT_SWOOLE_VERSION 4.8.12
+ENV PHP_EXT_SWOOLE_VERSION 4.8.13
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
-ENV PHP_COMPOSER_REPO https://mirrors.aliyun.com/composer/
 
 # Prepare
 RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
@@ -41,7 +40,6 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
 # Composer
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
-  && composer config -g repo.packagist composer $PHP_COMPOSER_REPO \
 # Clean
   && apk del .build-deps \
   && rm -rf /tmp/* ~/.pearrc /var/cache/apk/* \
