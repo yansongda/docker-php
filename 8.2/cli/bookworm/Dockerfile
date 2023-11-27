@@ -51,5 +51,5 @@ RUN apt-get update \
 # After Build
 WORKDIR /www
 
-COPY ./bullseye/sources.list /etc/apt/sources.list
+COPY ./bookworm/sources.list /etc/apt/sources.list
 COPY php.ini /usr/local/etc/php/
