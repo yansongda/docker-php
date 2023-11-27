@@ -1,4 +1,4 @@
-FROM php:8.2-cli-bullseye
+FROM php:8.1-cli-bookworm
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 

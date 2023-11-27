@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-bullseye
+FROM php:8.2-cli-bookworm
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -10,10 +10,10 @@ ENV WORKING_DIR /tmp
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
                     curl wget unzip libcurl4-openssl-dev libwebp-dev \
-                    libbz2-dev libpng-dev libxpm-dev librabbitmq-dev \
+                    libbz2-dev libpng-dev libxpm-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    redis-6.0.2 xlswriter-1.5.5 mongodb-1.16.2 amqp-2.1.1
+                    redis-6.0.2 xlswriter-1.5.5
 ENV PHP_EXT_SWOOLE_VERSION 5.1.1
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 
@@ -36,7 +36,7 @@ RUN apt-get update \
 # Extentions
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
   && docker-php-ext-install opcache bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
-  && docker-php-ext-enable opcache mongodb redis amqp xlswriter swoole \
+  && docker-php-ext-enable opcache redis xlswriter swoole \
 # Composer
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
@@ -53,4 +53,3 @@ WORKDIR /www
 
 COPY ./bullseye/sources.list /etc/apt/sources.list
 COPY php.ini /usr/local/etc/php/
-COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf

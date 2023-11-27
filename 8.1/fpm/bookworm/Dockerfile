@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-bullseye
+FROM php:8.1-fpm-bookworm
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
