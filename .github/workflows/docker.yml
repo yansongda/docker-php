@@ -33,7 +33,7 @@ jobs:
           - linux/arm64
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Recognize tag
         run: |
           platform=$(echo ${{ matrix.platform }} | sed 's/linux\///g')
@@ -42,7 +42,7 @@ jobs:
           echo $tag
           echo "tag=$tag" >> $GITHUB_ENV
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: arm64
       - name: Build the docker image
