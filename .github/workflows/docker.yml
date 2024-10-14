@@ -60,7 +60,7 @@ jobs:
           docker logout
       - name: Push the image to aliyun registry
         run: |
-          echo $ALIYUN_IMAGE_TOKEN | docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com --password-stdin
+          echo $ALIYUN_IMAGE_TOKEN | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin
           docker push registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
           docker logout
   manifest:
@@ -107,7 +107,7 @@ jobs:
           docker logout
       - name: Push the manifest to aliyun registry
         run: |
-          echo $ALIYUN_IMAGE_TOKEN | docker login --username=me@yansongda.cn registry.cn-shenzhen.aliyuncs.com --password-stdin
+          echo $ALIYUN_IMAGE_TOKEN | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin
 
           list=$(echo $PLATFORMS | sed 's/linux\///g')
 
