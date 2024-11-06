@@ -14,7 +14,7 @@ ENV PHP_DEPENDENCIES \
                     bzip2-dev libzip-dev freetype-dev linux-headers
 ENV PHP_EXT_PECL_INSTALL \
                     redis-6.1.0 xlswriter-1.5.7 mongodb-1.16.2 amqp-2.1.1
-ENV PHP_EXT_SWOOLE_VERSION 5.1.4
+ENV PHP_EXT_SWOOLE_VERSION 5.1.5
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 
 # Prepare
