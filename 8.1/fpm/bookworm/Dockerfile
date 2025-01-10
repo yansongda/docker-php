@@ -13,8 +13,8 @@ ENV PHP_DEPENDENCIES \
                     libwebp-dev libbz2-dev libpng-dev libxpm-dev librabbitmq-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    redis-6.1.0 xlswriter-1.5.7 mongodb-1.16.2 amqp-2.1.1
-ENV PHP_EXT_SWOOLE_VERSION 5.1.5
+                    redis-6.1.0 xlswriter-1.5.8 mongodb-1.16.2 amqp-2.1.1
+ENV PHP_EXT_SWOOLE_VERSION 5.1.6
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 
 # Prepare
