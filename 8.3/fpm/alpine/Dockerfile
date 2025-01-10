@@ -14,7 +14,7 @@ ENV PHP_DEPENDENCIES \
                     bzip2-dev libzip-dev freetype-dev linux-headers
 ENV PHP_EXT_PECL_INSTALL \
                     redis-6.1.0 xlswriter-1.5.8 mongodb-1.16.2 amqp-2.1.1
-ENV PHP_EXT_SWOOLE_VERSION 5.1.6
+ENV PHP_EXT_SWOOLE_VERSION 6.0.0
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 
 # Prepare
@@ -30,7 +30,7 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
   && ( \
         cd swoole \
         && phpize \
-        && ./configure --enable-openssl --enable-swoole-curl \
+        && ./configure --enable-openssl --enable-swoole-curl --enable-cares \
         && make -s -j$(nproc) && make install \
     ) \
 # Extentions
