@@ -10,10 +10,10 @@ ENV WORKING_DIR /tmp
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
                     curl wget unzip ca-certificates libcurl4-openssl-dev libc-ares-dev \
-                    libwebp-dev libbz2-dev libpng-dev libxpm-dev librabbitmq-dev \
+                    libwebp-dev libbz2-dev libpng-dev libxpm-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    redis-6.1.0 xlswriter-1.5.8 mongodb-1.16.2 amqp-2.1.1
+                    redis-6.1.0 xlswriter-1.5.8
 ENV PHP_EXT_SWOOLE_VERSION 6.0.0
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 

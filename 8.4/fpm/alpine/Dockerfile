@@ -9,11 +9,11 @@ ENV BUILD_DIR /tmp
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
-                    libstdc++ rabbitmq-c-dev libpng-dev \
+                    libstdc++ libpng-dev \
                     libwebp-dev libjpeg-turbo-dev libxpm-dev \
                     bzip2-dev libzip-dev freetype-dev linux-headers
 ENV PHP_EXT_PECL_INSTALL \
-                    redis-6.1.0 xlswriter-1.5.8 mongodb-1.16.2 amqp-2.1.1
+                    redis-6.1.0 xlswriter-1.5.8
 ENV PHP_EXT_SWOOLE_VERSION 6.0.0
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 
