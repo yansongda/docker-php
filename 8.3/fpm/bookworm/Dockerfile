@@ -9,7 +9,7 @@ ENV WORKING_DIR /tmp
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
-                    curl wget unzip ca-certificates libcurl4-openssl-dev \
+                    curl wget unzip ca-certificates libcurl4-openssl-dev libc-ares-dev \
                     libwebp-dev libbz2-dev libpng-dev libxpm-dev librabbitmq-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \

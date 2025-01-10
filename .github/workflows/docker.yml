@@ -19,13 +19,13 @@ jobs:
       fail-fast: false
       matrix:
         php-version:
-          - '8.1'
-          - '8.2'
-          - '8.3'
           - '8.4'
+          - '8.3'
+          - '8.2'
+          - '8.1'
         php-mode:
-          - fpm
           - cli
+          - fpm
         system:
           - alpine
           - bookworm
@@ -73,13 +73,13 @@ jobs:
       fail-fast: false
       matrix:
         php-version:
-          - '8.1'
-          - '8.2'
-          - '8.3'
           - '8.4'
+          - '8.3'
+          - '8.2'
+          - '8.1'
         php-mode:
-          - fpm
           - cli
+          - fpm
         system:
           - alpine
           - bookworm
