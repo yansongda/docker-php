@@ -25,7 +25,6 @@ jobs:
           - '8.1'
         php-mode:
           - cli
-          - fpm
         system:
           - alpine
           - bookworm
@@ -79,7 +78,6 @@ jobs:
           - '8.1'
         php-mode:
           - cli
-          - fpm
         system:
           - alpine
           - bookworm
