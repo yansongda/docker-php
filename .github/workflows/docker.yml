@@ -7,9 +7,13 @@ on:
   schedule:
     - cron: '0 0 * * 1'
 
-env:
+env:  
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_IMAGE_REPOSITORY: ghcr.io/${{ github.repository }}
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
+  DOCKERHUB_IMAGE_REPOSITORY: yansongda/php
   ALIYUN_IMAGE_TOKEN: ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
+  ALIYUN_IMAGE_REPOSITORY: registry.cn-shenzhen.aliyuncs.com/yansongda/php
 
 jobs:
   build:
@@ -49,20 +53,25 @@ jobs:
         run: |
           docker buildx ls
           docker buildx build -t yansongda/php --platform ${{ matrix.platform }} -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
-      - name: Tag the image
+      - name: Push the image to Aliyun registry
         run: |
-          docker tag yansongda/php yansongda/php:$tag
-          docker tag yansongda/php registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
-      - name: Push the image to docker registry
-        run: |
-          echo $DOCKERHUB_TOKEN | docker login --username yansongda --password-stdin
-          docker push yansongda/php:$tag
-          docker logout
-      - name: Push the image to aliyun registry
-        run: |
+          docker tag yansongda/php $ALIYUN_IMAGE_REPOSITORY:$tag
           echo $ALIYUN_IMAGE_TOKEN | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin
-          docker push registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
+          docker push $ALIYUN_IMAGE_REPOSITORY:$tag
           docker logout
+      - name: Push the image to Docker registry
+        run: |
+          docker tag yansongda/php $DOCKERHUB_IMAGE_REPOSITORY:$tag
+          echo $DOCKERHUB_TOKEN | docker login --username yansongda --password-stdin
+          docker push $DOCKERHUB_IMAGE_REPOSITORY:$tag
+          docker logout
+      - name: Push the image to Github registry
+        run: |
+          docker tag app $GITHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          echo $GITHUB_TOKEN | docker login --username=${{ github.actor }} ghcr.io --password-stdin
+          docker push $GITHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          docker logout
+      
   manifest:
     name: Manifest ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
     runs-on: ubuntu-latest
@@ -90,22 +99,7 @@ jobs:
 
           echo $tag
           echo "tag=$tag" >> $GITHUB_ENV
-      - name: Push the manifest to docker registry
-        run: |
-          echo $DOCKERHUB_TOKEN | docker login --username yansongda --password-stdin
-
-          list=$(echo $PLATFORMS | sed 's/linux\///g')
-
-          hub=''
-          for platform in $list;  
-          do  
-            hub=$hub'yansongda/php:'$platform'-'$tag' '
-          done
-
-          docker manifest create yansongda/php:$tag $hub
-          docker manifest push yansongda/php:$tag
-          docker logout
-      - name: Push the manifest to aliyun registry
+      - name: Push the manifest to Aliyun registry
         run: |
           echo $ALIYUN_IMAGE_TOKEN | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin
 
@@ -114,9 +108,39 @@ jobs:
           aliyun=''
           for platform in $list;  
           do
-            aliyun=$aliyun'registry.cn-shenzhen.aliyuncs.com/yansongda/php:'$platform'-'$tag' '
+            aliyun=$aliyun$ALIYUN_IMAGE_REPOSITORY':'$platform'-'$tag' '
           done
 
-          docker manifest create registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag $aliyun
-          docker manifest push registry.cn-shenzhen.aliyuncs.com/yansongda/php:$tag
+          docker manifest create $ALIYUN_IMAGE_REPOSITORY:$tag $aliyun
+          docker manifest push $ALIYUN_IMAGE_REPOSITORY:$tag
+          docker logout
+      - name: Push the manifest to Docker registry
+        run: |
+          echo $DOCKERHUB_TOKEN | docker login --username yansongda --password-stdin
+
+          list=$(echo $PLATFORMS | sed 's/linux\///g')
+
+          hub=''
+          for platform in $list;  
+          do  
+            hub=$hub$DOCKERHUB_IMAGE_REPOSITORY':'$platform'-'$tag' '
+          done
+
+          docker manifest create $DOCKERHUB_IMAGE_REPOSITORY:$tag $hub
+          docker manifest push $DOCKERHUB_IMAGE_REPOSITORY:$tag
+          docker logout
+      - name: Push the manifest to Github registry
+        run: |
+          echo $GITHUB_TOKEN | docker login --username=${{ github.actor }} ghcr.io --password-stdin
+
+          list=$(echo $PLATFORMS | sed 's/linux\///g')
+
+          github=''
+          for platform in $list;  
+          do
+            github=$github$GITHUB_IMAGE_REPOSITORY':'$platform'-'$tag' '
+          done
+
+          docker manifest create $GITHUB_IMAGE_REPOSITORY:$tag $github
+          docker manifest push $GITHUB_IMAGE_REPOSITORY:$tag
           docker logout
