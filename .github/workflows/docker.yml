@@ -19,6 +19,8 @@ jobs:
   build:
     name: Image ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}-${{ matrix.platform }}
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     strategy:
       fail-fast: false
       matrix:
