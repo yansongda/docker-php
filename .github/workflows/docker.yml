@@ -54,16 +54,16 @@ jobs:
       - name: Build the docker image
         run: |
           docker buildx ls
-          docker buildx build -t yansongda/php --platform ${{ matrix.platform }} -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
+          docker buildx build -t app --platform ${{ matrix.platform }} -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
       - name: Push the image to Aliyun registry
         run: |
-          docker tag yansongda/php $ALIYUN_IMAGE_REPOSITORY:$tag
+          docker tag app $ALIYUN_IMAGE_REPOSITORY:$tag
           echo $ALIYUN_IMAGE_TOKEN | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin
           docker push $ALIYUN_IMAGE_REPOSITORY:$tag
           docker logout
       - name: Push the image to Docker registry
         run: |
-          docker tag yansongda/php $DOCKERHUB_IMAGE_REPOSITORY:$tag
+          docker tag app $DOCKERHUB_IMAGE_REPOSITORY:$tag
           echo $DOCKERHUB_TOKEN | docker login --username yansongda --password-stdin
           docker push $DOCKERHUB_IMAGE_REPOSITORY:$tag
           docker logout
