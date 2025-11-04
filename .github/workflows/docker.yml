@@ -69,9 +69,9 @@ jobs:
           docker logout
       - name: Push the image to Github registry
         run: |
-          docker tag app $GITHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          docker tag app $GITHUB_IMAGE_REPOSITORY:$tag
           echo $GITHUB_TOKEN | docker login --username=${{ github.actor }} ghcr.io --password-stdin
-          docker push $GITHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          docker push $GITHUB_IMAGE_REPOSITORY:$tag
           docker logout
       
   manifest:
