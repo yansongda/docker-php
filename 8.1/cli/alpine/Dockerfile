@@ -13,8 +13,8 @@ ENV PHP_DEPENDENCIES \
                     libwebp-dev libjpeg-turbo-dev libxpm-dev \
                     bzip2-dev libstdc++
 ENV PHP_EXT_PECL_INSTALL \
-                    redis-6.1.0 xlswriter-1.5.7
-ENV PHP_EXT_SWOOLE_VERSION 5.1.6
+                    redis-6.2.0 xlswriter-1.5.7
+ENV PHP_EXT_SWOOLE_VERSION 6.1.1
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 
 # Prepare
