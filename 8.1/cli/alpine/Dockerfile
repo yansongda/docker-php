@@ -3,19 +3,15 @@ FROM php:8.1-cli-alpine
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
 # ENV for Global
-ENV TZ=Asia/Shanghai
-ENV DEPENDENCIES $PHPIZE_DEPS curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev
-ENV BUILD_DIR /tmp
+ENV TZ="Asia/Shanghai"
+ENV DEPENDENCIES="$PHPIZE_DEPS curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev"
+ENV BUILD_DIR="/tmp"
 
 # ENV for PHP
-ENV PHP_DEPENDENCIES \
-                    libpng-dev libzip-dev freetype-dev \
-                    libwebp-dev libjpeg-turbo-dev libxpm-dev \
-                    bzip2-dev libstdc++
-ENV PHP_EXT_PECL_INSTALL \
-                    redis-6.2.0 xlswriter-1.5.7
-ENV PHP_EXT_SWOOLE_VERSION 6.1.1
-ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
+ENV PHP_DEPENDENCIES="libpng-dev libzip-dev freetype-dev libwebp-dev libjpeg-turbo-dev libxpm-dev bzip2-dev libstdc++"
+ENV PHP_EXT_PECL_INSTALL="redis-6.2.0 xlswriter-1.5.7"
+ENV PHP_EXT_SWOOLE_VERSION="6.1.1"
+ENV PHP_COMPOSER_URL="https://getcomposer.org/composer-stable.phar"
 
 # Prepare
 RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
