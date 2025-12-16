@@ -1,4 +1,4 @@
-FROM php:8.2-cli-bookworm
+FROM php:8.3-cli-trixie
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
@@ -10,11 +10,11 @@ ENV WORKING_DIR /tmp
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
                     curl wget unzip ca-certificates libcurl4-openssl-dev \
-                    libwebp-dev libbz2-dev libpng-dev libxpm-dev \
+                    libwebp-dev libbz2-dev libpng-dev libxpm-dev libc-ares-dev \
                     libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
 ENV PHP_EXT_INSTALLED_PECL \
-                    redis-6.2.0 xlswriter-1.5.8
-ENV PHP_EXT_SWOOLE_VERSION 6.1.1
+                    redis-6.3.0 xlswriter-1.5.8
+ENV PHP_EXT_SWOOLE_VERSION 6.1.4
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 
 # Prepare
@@ -30,7 +30,7 @@ RUN apt-get update \
   && ( \
         cd swoole \
         && phpize \
-        && ./configure --enable-openssl --enable-swoole-curl \
+        && ./configure --enable-openssl --enable-swoole-curl --enable-cares \
         && make -s -j$(nproc) && make install \
     ) \
 # Extentions
@@ -46,6 +46,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* /tmp/pear ~/.pearrc && cd $WORKING_DIR && cd .. && rm -rf $WORKING_DIR \
 # For me
   && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+  && sudo sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources \
   && php --ri swoole && php --ri xlswriter
 
 # After Build

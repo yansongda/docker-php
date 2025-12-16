@@ -1,28 +1,28 @@
-FROM php:8.3-cli-alpine
+FROM php:8.5-cli-trixie
 
 LABEL maintainer="yansongda <me@yansongda.cn>"
 
 # ENV for Global
 ENV TZ=Asia/Shanghai
-ENV DEPENDENCIES $PHPIZE_DEPS curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev
-ENV BUILD_DIR /tmp
+ENV DEPENDENCIES gnupg git gcc g++
+ENV WORKING_DIR /tmp
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES \
-                    libpng-dev libzip-dev freetype-dev \
-                    libwebp-dev libjpeg-turbo-dev libxpm-dev \
-                    bzip2-dev libstdc++ linux-headers
-ENV PHP_EXT_PECL_INSTALL \
+                    curl wget unzip ca-certificates libcurl4-openssl-dev \
+                    libwebp-dev libbz2-dev libpng-dev libxpm-dev libc-ares-dev \
+                    libfreetype6-dev libjpeg-dev libssh-dev libzip-dev
+ENV PHP_EXT_INSTALLED_PECL \
                     redis-6.3.0 xlswriter-1.5.8
 ENV PHP_EXT_SWOOLE_VERSION 6.1.4
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 
 # Prepare
-RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
-  && apk add -U --no-cache tzdata $PHP_DEPENDENCIES \
-  && pecl install -o -f $PHP_EXT_PECL_INSTALL \
+RUN apt-get update \
+  && apt-get install -y $PHP_DEPENDENCIES $DEPENDENCIES \
+  && pecl install -o -f $PHP_EXT_INSTALLED_PECL \
 # Swoole
-  && mkdir -p $BUILD_DIR && cd $BUILD_DIR \
+  && mkdir -p $WORKING_DIR && cd $WORKING_DIR \
   && curl -SL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o swoole.tar.gz \
   && ls -alh \
   && mkdir -p swoole \
@@ -36,20 +36,21 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
 # Extentions
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
   && docker-php-ext-install opcache bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
-  && docker-php-ext-enable redis xlswriter swoole \
+  && docker-php-ext-enable opcache redis xlswriter swoole \
 # Composer
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
 # Clean
-  && apk del .build-deps \
-  && rm -rf /tmp/* ~/.pearrc /var/cache/apk/* \
-  && cd && rm -rf $BUILD_DIR \
-## For me
-  && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
-  && cp /usr/share/zoneinfo/$TZ /etc/localtime && date \
+  && apt-get -y remove $DEPENDENCIES \
+  && apt-get purge -y --auto-remove \
+  && rm -rf /var/lib/apt/lists/* /tmp/pear ~/.pearrc && cd $WORKING_DIR && cd .. && rm -rf $WORKING_DIR \
+# For me
+  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+  && sudo sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources \
   && php --ri swoole && php --ri xlswriter
 
 # After Build
 WORKDIR /www
 
+COPY ./bookworm/sources.list /etc/apt/sources.list
 COPY php.ini /usr/local/etc/php/

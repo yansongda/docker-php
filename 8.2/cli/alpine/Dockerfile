@@ -13,8 +13,8 @@ ENV PHP_DEPENDENCIES \
                     libwebp-dev libjpeg-turbo-dev libxpm-dev \
                     bzip2-dev libstdc++ linux-headers
 ENV PHP_EXT_PECL_INSTALL \
-                    redis-6.2.0 xlswriter-1.5.8
-ENV PHP_EXT_SWOOLE_VERSION 6.1.1
+                    redis-6.3.0 xlswriter-1.5.8
+ENV PHP_EXT_SWOOLE_VERSION 6.1.4
 ENV PHP_COMPOSER_URL https://getcomposer.org/composer-stable.phar
 
 # Prepare
@@ -45,7 +45,7 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
   && rm -rf /tmp/* ~/.pearrc /var/cache/apk/* \
   && cd && rm -rf $BUILD_DIR \
 ## For me
-  && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
+  && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
   && cp /usr/share/zoneinfo/$TZ /etc/localtime && date \
   && php --ri swoole && php --ri xlswriter
 

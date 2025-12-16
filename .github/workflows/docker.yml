@@ -33,7 +33,7 @@ jobs:
           - cli
         system:
           - alpine
-          - bookworm
+          - trixie
         platform:
           - linux/amd64
           - linux/arm64
@@ -91,7 +91,7 @@ jobs:
           - cli
         system:
           - alpine
-          - bookworm
+          - trixie
     env:
       PLATFORMS: "linux/arm64 linux/amd64"
     steps:
