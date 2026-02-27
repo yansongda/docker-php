@@ -10,7 +10,7 @@ ENV BUILD_DIR="/tmp"
 # ENV for PHP
 ENV PHP_DEPENDENCIES="libpng-dev libzip-dev freetype-dev libwebp-dev libjpeg-turbo-dev libxpm-dev bzip2-dev libstdc++ linux-headers"
 ENV PHP_EXT_PECL_INSTALL="redis-6.3.0 xlswriter-1.5.8"
-ENV PHP_EXT_SWOOLE_VERSION="6.1.4"
+ENV PHP_EXT_SWOOLE_VERSION="6.1.7"
 ENV PHP_COMPOSER_URL="https://getcomposer.org/composer-stable.phar"
 
 # Prepare
