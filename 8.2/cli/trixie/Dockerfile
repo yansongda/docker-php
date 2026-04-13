@@ -8,7 +8,7 @@ ENV DEPENDENCIES="gnupg git gcc g++"
 ENV WORKING_DIR="/tmp"
 
 # ENV for PHP
-ENV PHP_DEPENDENCIES="curl wget unzip ca-certificates libcurl4-openssl-dev libwebp-dev libbz2-dev libpng-dev libxpm-dev libfreetype6-dev libjpeg-dev libssh-dev libzip-dev"
+ENV PHP_DEPENDENCIES="curl wget unzip ca-certificates libcurl4-openssl-dev libwebp-dev libbz2-dev libpng-dev libxpm-dev libfreetype6-dev libjpeg-dev libssh-dev libssh2-dev libzip-dev"
 ENV PHP_EXT_INSTALLED_PECL="redis-6.3.0 xlswriter-1.5.8"
 ENV PHP_EXT_SWOOLE_VERSION="6.2.0"
 ENV PHP_COMPOSER_URL="https://getcomposer.org/composer-stable.phar"
@@ -26,7 +26,7 @@ RUN apt-get update \
   && ( \
         cd swoole \
         && phpize \
-        && ./configure --enable-openssl --enable-swoole-curl \
+        && ./configure --enable-swoole-curl --enable-swoole-ftp --with-swoole-ssh2 \
         && make -s -j$(nproc) && make install \
     ) \
 # Extentions

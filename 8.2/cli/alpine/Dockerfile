@@ -8,7 +8,7 @@ ENV DEPENDENCIES="$PHPIZE_DEPS curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev"
 ENV BUILD_DIR="/tmp"
 
 # ENV for PHP
-ENV PHP_DEPENDENCIES="libpng-dev libzip-dev freetype-dev libwebp-dev libjpeg-turbo-dev libxpm-dev bzip2-dev libstdc++ linux-headers"
+ENV PHP_DEPENDENCIES="libpng-dev libzip-dev freetype-dev libwebp-dev libjpeg-turbo-dev libxpm-dev bzip2-dev libstdc++ linux-headers libssh2-dev"
 ENV PHP_EXT_PECL_INSTALL="redis-6.3.0 xlswriter-1.5.8"
 ENV PHP_EXT_SWOOLE_VERSION="6.2.0"
 ENV PHP_COMPOSER_URL="https://getcomposer.org/composer-stable.phar"
@@ -26,7 +26,7 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
   && ( \
         cd swoole \
         && phpize \
-        && ./configure --enable-openssl --enable-swoole-curl \
+        && ./configure --enable-swoole-curl --enable-swoole-ftp --with-swoole-ssh2 \
         && make -s -j$(nproc) && make install \
     ) \
 # Extentions
