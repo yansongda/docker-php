@@ -9,8 +9,8 @@ ENV WORKING_DIR="/tmp"
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES="curl wget unzip ca-certificates libcurl4-openssl-dev libwebp-dev libbz2-dev libpng-dev libxpm-dev libfreetype6-dev libjpeg-dev libssh-dev libssh2-1-dev libzip-dev"
-ENV PHP_EXT_INSTALLED_PECL="redis-6.3.0 xlswriter-1.5.8"
-ENV PHP_EXT_SWOOLE_VERSION="6.2.0"
+ENV PHP_EXT_INSTALLED_PECL="redis-6.3.0 xlswriter-3.0.0"
+ENV PHP_EXT_SWOOLE_VERSION="6.2.2"
 ENV PHP_COMPOSER_URL="https://getcomposer.org/composer-stable.phar"
 
 # Prepare
@@ -36,6 +36,10 @@ RUN apt-get update \
 # Composer
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
+# PIE
+  && curl -fL --output /tmp/pie.phar https://github.com/php/pie/releases/latest/download/pie.phar \
+  && mv /tmp/pie.phar /usr/local/bin/pie \
+  && chmod +x /usr/local/bin/pie \
 # Clean
   && apt-get -y remove $DEPENDENCIES \
   && apt-get purge -y --auto-remove \
@@ -43,7 +47,7 @@ RUN apt-get update \
 # For me
   && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
   && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources \
-  && php --ri swoole && php --ri xlswriter
+  && php --ri swoole && php --ri xlswriter && pie --version
 
 # After Build
 WORKDIR /www

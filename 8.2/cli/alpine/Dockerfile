@@ -9,8 +9,8 @@ ENV BUILD_DIR="/tmp"
 
 # ENV for PHP
 ENV PHP_DEPENDENCIES="libpng-dev libzip-dev freetype-dev libwebp-dev libjpeg-turbo-dev libxpm-dev bzip2-dev libstdc++ linux-headers libssh2-dev"
-ENV PHP_EXT_PECL_INSTALL="redis-6.3.0 xlswriter-1.5.8"
-ENV PHP_EXT_SWOOLE_VERSION="6.2.0"
+ENV PHP_EXT_PECL_INSTALL="redis-6.3.0 xlswriter-3.0.0"
+ENV PHP_EXT_SWOOLE_VERSION="6.2.2"
 ENV PHP_COMPOSER_URL="https://getcomposer.org/composer-stable.phar"
 
 # Prepare
@@ -36,6 +36,10 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
 # Composer
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
   && chmod a+x /usr/local/bin/composer \
+# PIE
+  && curl -fL --output /tmp/pie.phar https://github.com/php/pie/releases/latest/download/pie.phar \
+  && mv /tmp/pie.phar /usr/local/bin/pie \
+  && chmod +x /usr/local/bin/pie \
 # Clean
   && apk del .build-deps \
   && rm -rf /tmp/* ~/.pearrc /var/cache/apk/* \
@@ -43,7 +47,7 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
 ## For me
   && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
   && cp /usr/share/zoneinfo/$TZ /etc/localtime && date \
-  && php --ri swoole && php --ri xlswriter
+  && php --ri swoole && php --ri xlswriter && pie --version
 
 # After Build
 WORKDIR /www
