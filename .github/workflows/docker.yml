@@ -18,7 +18,7 @@ env:
 jobs:
   build:
     name: Image ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}-${{ matrix.platform }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     permissions:
       packages: write
     strategy:
@@ -37,6 +37,11 @@ jobs:
         platform:
           - linux/amd64
           - linux/arm64
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -48,6 +53,7 @@ jobs:
           echo $tag
           echo "tag=$tag" >> $GITHUB_ENV
       - name: Set up QEMU
+        if: runner.arch != 'ARM64'
         uses: docker/setup-qemu-action@v4
         with:
           platforms: arm64
