@@ -31,7 +31,7 @@ RUN apk add -U --no-cache --virtual .build-deps $DEPENDENCIES \
     ) \
 # Extentions
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
-  && docker-php-ext-install opcache bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
+  && docker-php-ext-install bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
   && docker-php-ext-enable redis xlswriter swoole \
 # Composer
   && curl $PHP_COMPOSER_URL -o /usr/local/bin/composer \
