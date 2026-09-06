@@ -42,6 +42,7 @@ RUN docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freety
   && PHP_VERSION_MAIN=$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;') \
   && case "$PHP_VERSION_MAIN" in 8.5) OPCACHE="";; *) OPCACHE="opcache";; esac \
   && docker-php-ext-install $OPCACHE bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
+  && docker-php-ext-enable redis xlswriter swoole \
   && if [ -n "$OPCACHE" ]; then docker-php-ext-enable opcache; fi
 
 # Composer

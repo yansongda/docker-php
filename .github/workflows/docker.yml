@@ -81,14 +81,18 @@ jobs:
             php -m | grep -Eiq "^(swoole|redis|xlswriter)$"
             composer --version >/dev/null
             pie --version >/dev/null
-            d=$(php -n -r "echo ini_get(\"extension_dir\")")
+            d=$(php -n -r "echo ini_get(\"extension_dir\");")
             found=0
             for so in "$d"/*.so; do
               [ -e "$so" ] || continue
               found=1
-              if ldd "$so" 2>&1 | grep -q "not found"; then
+              # musl (alpine) ldd always reports Error relocating ... symbol not found
+              # for PHP core symbols (resolved at dlopen time); only a missing
+              # shared library (musl: Error loading shared library, glibc:
+              # = not found) is a real packaging bug.
+              if ldd "$so" 2>&1 | grep -Eq "Error loading shared library|=> not found"; then
                 echo "MISSING shared libs in $so:"
-                ldd "$so" 2>&1 | grep "not found"
+                ldd "$so" 2>&1 | grep -E "Error loading shared library|=> not found"
                 exit 1
               fi
             done
