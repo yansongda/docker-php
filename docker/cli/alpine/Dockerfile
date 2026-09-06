@@ -37,8 +37,11 @@ RUN curl -fSL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VE
 # NOTE: since PHP 8.5.0, opcache is built into the PHP binary and no longer
 # produces a loadable .so module (php/php-src#20557), so it is neither
 # installed nor enabled there.
+# NOTE: the official images set ENV PHP_VERSION=<full version> (e.g. 8.5.10),
+# which shadows the ARG inside RUN; derive the branch version from PHP itself.
 RUN docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
-  && case "$PHP_VERSION" in 8.5) OPCACHE="";; *) OPCACHE="opcache";; esac \
+  && PHP_VERSION_MAIN=$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;') \
+  && case "$PHP_VERSION_MAIN" in 8.5) OPCACHE="";; *) OPCACHE="opcache";; esac \
   && docker-php-ext-install $OPCACHE bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
   && if [ -n "$OPCACHE" ]; then docker-php-ext-enable opcache; fi
 

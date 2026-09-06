@@ -42,9 +42,12 @@ RUN curl -fSL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VE
 # NOTE: opcache JIT is disabled on 8.2 ZTS builds: zend_jit_x86.dasc fails to
 # compile with gcc 15 ("@TLSGD operator requires %rdi as dest register").
 # docker-php-ext-install skips its own configure when a Makefile already exists.
+# NOTE: the official images set ENV PHP_VERSION=<full version> (e.g. 8.5.10),
+# which shadows the ARG inside RUN; derive the branch version from PHP itself.
 RUN docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
-  && case "$PHP_VERSION" in 8.5) OPCACHE="";; *) OPCACHE="opcache";; esac \
-  && case "$PHP_VERSION" in 8.2) JIT="--disable-opcache-jit";; *) JIT="";; esac \
+  && PHP_VERSION_MAIN=$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;') \
+  && case "$PHP_VERSION_MAIN" in 8.5) OPCACHE="";; *) OPCACHE="opcache";; esac \
+  && case "$PHP_VERSION_MAIN" in 8.2) JIT="--disable-opcache-jit";; *) JIT="";; esac \
   && if [ -n "$OPCACHE" ]; then docker-php-ext-configure opcache $JIT; fi \
   && docker-php-ext-install $OPCACHE bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
   && if [ -n "$OPCACHE" ]; then docker-php-ext-enable opcache; fi
