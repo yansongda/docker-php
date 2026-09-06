@@ -66,7 +66,10 @@ jobs:
       - name: Build the docker image
         run: |
           docker buildx ls
-          docker buildx build -t app --platform ${{ matrix.platform }} -f ./${{ matrix.php-version }}/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile ./${{ matrix.php-version }}/${{ matrix.php-mode }}
+          docker buildx build \
+            --build-arg PHP_VERSION=${{ matrix.php-version }} \
+            -t app --platform ${{ matrix.platform }} \
+            -f ./docker/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile .
       - name: Smoke test
         run: |
           docker run --rm app sh -c 'php -v && php -m | grep -Ei "swoole|redis|xlswriter|opcache" && composer --version && pie --version'

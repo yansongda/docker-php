@@ -1,6 +1,12 @@
 # docker-php
 Docker with php include php and cli
 
+## Build layout
+- `docker/{cli,zts}/{alpine,trixie}/Dockerfile`: shared multi-stage templates,
+  parameterized via `--build-arg PHP_VERSION=x.y` (CI matrix builds 8.2 – 8.5)
+- `php.ini`: shared PHP configuration
+- `legacy/`: archived Dockerfiles for PHP 7.1 – 8.1, no longer built
+
 ## Usage
 ### China Region
 docker pull registry.cn-shenzhen.aliyuncs.com/yansongda/php
@@ -10,7 +16,9 @@ docker pull yansongda/php
 
 ## Added ext
 
-detail version see every version folder
+see `ENV` in `docker/{cli,zts}/{alpine,trixie}/Dockerfile`
+(extensions are compiled in the `builder` stage; only the artifacts and runtime
+libraries land in the final image, so no runtime `pecl`/`pie` compile capability)
 
 ## Tags
 
