@@ -33,6 +33,10 @@ RUN apt-get update \
     ) \
 # Extentions
   && docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
+# NOTE: opcache JIT is disabled on 8.2 ZTS builds: zend_jit_x86.dasc fails to compile
+# with gcc 15 ("@TLSGD operator requires %rdi as dest register").
+# docker-php-ext-install skips its own configure when a Makefile already exists.
+  && docker-php-ext-configure opcache --disable-opcache-jit \
   && docker-php-ext-install opcache bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
   && docker-php-ext-enable opcache redis xlswriter swoole \
 # Composer
