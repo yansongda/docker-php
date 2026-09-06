@@ -72,9 +72,29 @@ jobs:
             -f ./docker/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile .
       - name: Smoke test
         run: |
-          docker run --rm app sh -c 'php -v && php -m | grep -Ei "swoole|redis|xlswriter|opcache" && composer --version && pie --version'
-          ext_dir=$(docker run --rm app php -r 'echo ini_get("extension_dir");')
-          docker run --rm app sh -c "ldd $ext_dir/*.so | grep -q 'not found' && { ldd $ext_dir/*.so | grep 'not found'; exit 1; } || echo 'all extension libs ok'"
+          docker run --rm app sh -ec '
+            if php -v 2>&1 | grep -q "Failed loading"; then
+              echo "PHP startup warning detected:"
+              php -v 2>&1 | grep "Failed loading"
+              exit 1
+            fi
+            php -m | grep -Eiq "^(swoole|redis|xlswriter)$"
+            composer --version >/dev/null
+            pie --version >/dev/null
+            d=$(php -n -r "echo ini_get(\"extension_dir\")")
+            found=0
+            for so in "$d"/*.so; do
+              [ -e "$so" ] || continue
+              found=1
+              if ldd "$so" 2>&1 | grep -q "not found"; then
+                echo "MISSING shared libs in $so:"
+                ldd "$so" 2>&1 | grep "not found"
+                exit 1
+              fi
+            done
+            [ "$found" = 1 ] || { echo "no shared extensions found in $d"; exit 1; }
+            echo "smoke test ok"
+          '
       - name: Push the image to GHCR (with retry)
         run: |
           echo "$GITHUB_TOKEN" | docker login ghcr.io --username=${{ github.actor }} --password-stdin

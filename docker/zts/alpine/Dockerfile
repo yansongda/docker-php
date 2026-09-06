@@ -39,16 +39,17 @@ RUN curl -fSL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VE
 # NOTE: since PHP 8.5.0, opcache is built into the PHP binary and no longer
 # produces a loadable .so module (php/php-src#20557), so it is neither
 # installed nor enabled there.
-# NOTE: opcache JIT is disabled on 8.2 ZTS builds: zend_jit_x86.dasc fails to
-# compile with gcc 15 ("@TLSGD operator requires %rdi as dest register").
-# docker-php-ext-install skips its own configure when a Makefile already exists.
+# NOTE: opcache is omitted on 8.2 ZTS builds: zend_jit_x86.dasc fails to
+# compile with gcc 15 ("@TLSGD operator requires %rdi as dest register"), and
+# even with --disable-opcache-jit the ZTS build links a broken opcache.so
+# ("undefined symbol: jit_globals_id": jit/zend_jit.h declares the TSRM global
+# unconditionally on ZTS while zend_jit.c is not compiled). PHP 8.2 is
+# security-only and upstream will not fix this; 8.2 reaches EOL 2026-12-31.
 # NOTE: the official images set ENV PHP_VERSION=<full version> (e.g. 8.5.10),
 # which shadows the ARG inside RUN; derive the branch version from PHP itself.
 RUN docker-php-ext-configure gd --with-webp --with-jpeg --with-xpm --with-freetype \
   && PHP_VERSION_MAIN=$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;') \
-  && case "$PHP_VERSION_MAIN" in 8.5) OPCACHE="";; *) OPCACHE="opcache";; esac \
-  && case "$PHP_VERSION_MAIN" in 8.2) JIT="--disable-opcache-jit";; *) JIT="";; esac \
-  && if [ -n "$OPCACHE" ]; then docker-php-ext-configure opcache $JIT; fi \
+  && case "$PHP_VERSION_MAIN" in 8.5|8.2) OPCACHE="";; *) OPCACHE="opcache";; esac \
   && docker-php-ext-install $OPCACHE bcmath bz2 gd mysqli pdo pdo_mysql zip sockets pcntl \
   && if [ -n "$OPCACHE" ]; then docker-php-ext-enable opcache; fi
 

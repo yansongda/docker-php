@@ -40,8 +40,10 @@ libraries land in the final image, so no runtime `pecl`/`pie` compile capability
 - opcache.enable_cli = On
 
   Note: since PHP 8.5, opcache is built into the PHP binary and is no longer shipped as a
-  loadable `.so` module (php/php-src#20557). On 8.2 ZTS builds the opcache JIT is disabled
-  (`zend_jit_x86.dasc` fails to compile with gcc 15).
+  loadable `.so` module (php/php-src#20557). 8.2 ZTS builds ship **without** opcache: even
+  with JIT disabled the ZTS opcache.so is broken upstream ("undefined symbol:
+  jit_globals_id", jit/zend_jit.h declares the TSRM global unconditionally), and PHP 8.2
+  is security-only (EOL 2026-12-31) so upstream will not fix it.
 
 ## Added tools
 - composer
