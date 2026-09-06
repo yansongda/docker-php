@@ -2,7 +2,7 @@ name: Docker Image
 
 on:
   push:
-    branchs:
+    branches:
       - master
   schedule:
     - cron: '0 0 * * 1'
@@ -31,6 +31,7 @@ jobs:
           - '8.2'
         php-mode:
           - cli
+          - zts
         system:
           - alpine
           - trixie
@@ -90,6 +91,7 @@ jobs:
           - '8.2'
         php-mode:
           - cli
+          - zts
         system:
           - alpine
           - trixie
