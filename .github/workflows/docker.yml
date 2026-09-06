@@ -233,6 +233,6 @@ jobs:
           manifest_retry "$DOCKERHUB_IMAGE_REPOSITORY:$tag" "$refs_hub"
           docker logout
 
-          echo "$GITHUB_TOKEN" | docker login ghcr.io --username=${{ github.actor }} ghcr.io --password-stdin
+          echo "$GITHUB_TOKEN" | docker login ghcr.io --username=${{ github.actor }} --password-stdin
           manifest_retry "$ghcr_image:$tag" "$refs_ghcr"
           docker logout
