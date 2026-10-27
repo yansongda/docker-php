@@ -22,16 +22,23 @@ RUN apt-get update \
   && pecl install -o -f $PHP_EXT_PECL_INSTALL
 
 # Swoole
-# NOTE: --enable-swoole-curl is safe from Swoole 6.2.3 on: the ZTS segfault
-# (swoole-src#6145) is fixed there. The smoke test destroys a plain CurlHandle
-# to guard against a regression.
-RUN curl -fSL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o /tmp/swoole.tar.gz \
+# NOTE: --enable-swoole-curl is enabled on ZTS builds only for PHP >= 8.4: the
+# swoole-src#6145 fix (delegating native CurlHandle destruction back to
+# ext-curl) exists only in Swoole's thirdparty/php84 tree, which is what PHP
+# >= 8.4 compiles. PHP 8.2/8.3 still use the unpatched thirdparty/php tree,
+# which additionally fails to build there with newer gcc ("converting to 'bool'
+# from 'std::nullptr_t'": CRYPTO_get_id_callback() expands to NULL on OpenSSL 3).
+# NOTE: the official images set ENV PHP_VERSION=<full version>, which shadows
+# the ARG inside RUN; derive the branch version from PHP itself.
+RUN SWOOLE_CURL=$(php -r 'echo PHP_VERSION_ID >= 80400 ? "--enable-swoole-curl" : "";') \
+  && echo "swoole curl hook: ${SWOOLE_CURL:-disabled}" \
+  && curl -fSL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o /tmp/swoole.tar.gz \
   && mkdir -p /tmp/swoole \
   && tar -xf /tmp/swoole.tar.gz -C /tmp/swoole --strip-components=1 \
   && ( \
         cd /tmp/swoole \
         && phpize \
-        && ./configure --enable-swoole-curl --enable-cares --enable-swoole-ftp --with-swoole-ssh2 --enable-swoole-thread \
+        && ./configure $SWOOLE_CURL --enable-cares --enable-swoole-ftp --with-swoole-ssh2 --enable-swoole-thread \
         && make -s -j$(nproc) && make install \
     )
 
