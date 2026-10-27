@@ -8,9 +8,9 @@ ENV TZ="Asia/Shanghai"
 
 # ENV for PHP
 ENV PHP_EXT_PECL_INSTALL="redis-6.3.0 xlswriter-3.0.0"
-ENV PHP_EXT_SWOOLE_VERSION="6.2.2"
+ENV PHP_EXT_SWOOLE_VERSION="6.2.4"
 ENV COMPOSER_VERSION="2.10.3"
-ENV PIE_VERSION="1.4.10"
+ENV PIE_VERSION="1.5.3"
 
 # Dependencies (build-only, dropped in the final image)
 # NOTE: c-ares-dev is installed explicitly and not relied upon transitively
@@ -23,15 +23,16 @@ RUN apk add -U --no-cache \
   && pecl install -o -f $PHP_EXT_PECL_INSTALL
 
 # Swoole
-# NOTE: --enable-swoole-curl is omitted on ZTS builds due to a known segfault
-# (swoole-src#6145). Re-enable it once a Swoole release contains the fix.
+# NOTE: --enable-swoole-curl is safe from Swoole 6.2.3 on: the ZTS segfault
+# (swoole-src#6145) is fixed there. The smoke test destroys a plain CurlHandle
+# to guard against a regression.
 RUN curl -fSL "https://github.com/swoole/swoole-src/archive/v${PHP_EXT_SWOOLE_VERSION}.tar.gz" -o /tmp/swoole.tar.gz \
   && mkdir -p /tmp/swoole \
   && tar -xf /tmp/swoole.tar.gz -C /tmp/swoole --strip-components=1 \
   && ( \
         cd /tmp/swoole \
         && phpize \
-        && ./configure --enable-cares --enable-swoole-ftp --with-swoole-ssh2 --enable-swoole-thread \
+        && ./configure --enable-swoole-curl --enable-cares --enable-swoole-ftp --with-swoole-ssh2 --enable-swoole-thread \
         && make -s -j$(nproc) && make install \
     )
 

@@ -26,7 +26,9 @@ libraries land in the final image, so no runtime `pecl`/`pie` compile capability
 - `cli-*` (e.g. `yansongda/php:cli-8.5-alpine`): built on official NTS images (`php:8.x-cli-*`)
 - `zts-*` (e.g. `yansongda/php:zts-8.5-alpine`): built on official ZTS images (`php:8.x-zts-*`),
   with Swoole compiled `--enable-swoole-thread` for the `Swoole\Thread` API (ZTS-only).
-  Note: `--enable-swoole-curl` is omitted on ZTS builds due to swoole-src#6145.
+  Note: `--enable-swoole-curl` is now also enabled on ZTS builds; the ZTS segfault
+  (swoole-src#6145) was fixed in Swoole 6.2.3, and the CI smoke test destroys a
+  plain `CurlHandle` to guard against a regression.
 - PHP 7.1 – 8.1 images (including the old `fpm-*` variants) are archived under `legacy/`
   and are **no longer built**.
 

@@ -81,6 +81,10 @@ jobs:
             php -m | grep -Eiq "^(swoole|redis|xlswriter)$"
             composer --version >/dev/null
             pie --version >/dev/null
+            # Swoole replaces the native CurlHandle object handlers; destroying a
+            # handle it does not own must not segfault (swoole-src#6145, fixed in
+            # 6.2.3). Also guards --enable-swoole-curl on the ZTS builds.
+            php -r "\$h = curl_init(); \$arr = [\$h, 42]; unset(\$h, \$arr); gc_collect_cycles(); echo \"curl dtor ok\n\";"
             d=$(php -n -r "echo ini_get(\"extension_dir\");")
             found=0
             for so in "$d"/*.so; do

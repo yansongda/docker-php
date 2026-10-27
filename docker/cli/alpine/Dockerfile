@@ -8,9 +8,9 @@ ENV TZ="Asia/Shanghai"
 
 # ENV for PHP
 ENV PHP_EXT_PECL_INSTALL="redis-6.3.0 xlswriter-3.0.0"
-ENV PHP_EXT_SWOOLE_VERSION="6.2.2"
+ENV PHP_EXT_SWOOLE_VERSION="6.2.4"
 ENV COMPOSER_VERSION="2.10.3"
-ENV PIE_VERSION="1.4.10"
+ENV PIE_VERSION="1.5.3"
 
 # Dependencies (build-only, dropped in the final image)
 # NOTE: c-ares-dev is installed explicitly and not relied upon transitively
