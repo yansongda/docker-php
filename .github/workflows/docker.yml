@@ -66,7 +66,14 @@ jobs:
       - name: Build the docker image
         run: |
           docker buildx ls
+          # Attestations (provenance/sbom) are disabled on purpose: with them a
+          # single-platform `docker push` publishes an OCI index (the image plus
+          # an unknown/unknown attestation manifest) instead of a plain manifest.
+          # The per-arch tags must stay plain manifests so that the index job can
+          # merge them with `docker buildx imagetools create` (legacy
+          # `docker manifest create` refuses manifest lists as sources).
           docker buildx build \
+            --provenance=false --sbom=false \
             --build-arg PHP_VERSION=${{ matrix.php-version }} \
             -t app --platform ${{ matrix.platform }} \
             -f ./docker/${{ matrix.php-mode }}/${{ matrix.system }}/Dockerfile .
@@ -103,84 +110,46 @@ jobs:
             [ "$found" = 1 ] || { echo "no shared extensions found in $d"; exit 1; }
             echo "smoke test ok"
           '
-      - name: Push the image to GHCR (with retry)
+      - name: Push the image to all registries (concurrent, with retry)
         run: |
-          echo "$GITHUB_TOKEN" | docker login ghcr.io --username=${{ github.actor }} --password-stdin
-          docker tag app "$ghcr_image:$tag"
-          for i in 1 2 3; do
-            docker push "$ghcr_image:$tag" && break
-            [ "$i" -eq 3 ] && exit 1
-            echo "push failed (attempt $i), retry in 10s"
-            sleep 10
-          done
-          docker logout
-
-  push:
-    name: Push ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}-${{ matrix.platform }}
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    permissions:
-      packages: read
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version:
-          - '8.5'
-          - '8.4'
-          - '8.3'
-          - '8.2'
-        php-mode:
-          - cli
-          - zts
-        system:
-          - alpine
-          - trixie
-        platform:
-          - linux/amd64
-          - linux/arm64
-    steps:
-      - name: Recognize tag
-        run: |
-          platform=${{ matrix.platform }}
-          tag=${platform#linux/}-${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
-          ghcr_image=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')
-
-          echo "$tag"
-          echo "tag=$tag" >> "$GITHUB_ENV"
-          echo "ghcr_image=$ghcr_image" >> "$GITHUB_ENV"
-      - name: Copy the image to Aliyun & Docker Hub (concurrent, with retry)
-        run: |
-          sudo apt-get install -y skopeo > /dev/null
-
-          copy_retry() {
+          push_retry() {
             for i in 1 2 3; do
-              skopeo copy --retry-times 3 "$@" && return 0
+              docker push "$1" && return 0
               [ "$i" -eq 3 ] && return 1
-              echo "copy to $2 failed (attempt $i), retry in 15s"
-              sleep 15
+              echo "push $1 failed (attempt $i), retry in 10s"
+              sleep 10
             done
           }
 
-          copy_retry "docker://$ghcr_image:$tag" "docker://$ALIYUN_IMAGE_REPOSITORY:$tag" \
-            --src-creds "${{ github.actor }}:$GITHUB_TOKEN" \
-            --dest-creds "yansongda:$ALIYUN_IMAGE_TOKEN" & P1=$!
-          copy_retry "docker://$ghcr_image:$tag" "docker://$DOCKERHUB_IMAGE_REPOSITORY:$tag" \
-            --src-creds "${{ github.actor }}:$GITHUB_TOKEN" \
-            --dest-creds "yansongda:$DOCKERHUB_TOKEN" & P2=$!
+          echo "$GITHUB_TOKEN" | docker login ghcr.io --username=${{ github.actor }} --password-stdin
+          echo "$ALIYUN_IMAGE_TOKEN" | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin
+          echo "$DOCKERHUB_TOKEN" | docker login --username yansongda --password-stdin
+
+          docker tag app "$ghcr_image:$tag"
+          docker tag app "$ALIYUN_IMAGE_REPOSITORY:$tag"
+          docker tag app "$DOCKERHUB_IMAGE_REPOSITORY:$tag"
+
+          push_retry "$ghcr_image:$tag" & P1=$!
+          push_retry "$ALIYUN_IMAGE_REPOSITORY:$tag" & P2=$!
+          push_retry "$DOCKERHUB_IMAGE_REPOSITORY:$tag" & P3=$!
 
           FAIL=0
           wait $P1 || FAIL=1
           wait $P2 || FAIL=1
+          wait $P3 || FAIL=1
+
+          docker logout ghcr.io || true
+          docker logout registry.cn-shenzhen.aliyuncs.com || true
+          docker logout || true
           exit $FAIL
 
-  manifest:
-    name: Manifest ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+  index:
+    name: Index ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs:
-      - build
-      - push
+    needs: build
+    permissions:
+      packages: write
     strategy:
       fail-fast: false
       matrix:
@@ -197,8 +166,9 @@ jobs:
           - trixie
     env:
       PLATFORMS: "linux/arm64 linux/amd64"
+      EXPECTED_PLATFORMS: "linux/amd64,linux/arm64"
     steps:
-      - name: Recognize manifest
+      - name: Recognize tag
         run: |
           tag=${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
           ghcr_image=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')
@@ -206,7 +176,7 @@ jobs:
           echo "$tag"
           echo "tag=$tag" >> "$GITHUB_ENV"
           echo "ghcr_image=$ghcr_image" >> "$GITHUB_ENV"
-      - name: Push the manifests to all registries (with retry)
+      - name: Create and verify the indexes in all registries (with retry)
         run: |
           list=$(echo $PLATFORMS | sed 's/linux\///g')
 
@@ -220,23 +190,45 @@ jobs:
             refs_ghcr="$refs_ghcr$ghcr_image:$platform-$tag "
           done
 
-          manifest_retry() {
+          # `buildx imagetools create` replaces the target tag instead of amending
+          # a locally cached list, so it is idempotent and safe to retry. It also
+          # accepts manifest lists as sources, unlike legacy `docker manifest
+          # create`, and needs no local docker manifest store.
+          index_retry() {
             for i in 1 2 3; do
-              docker manifest create "$1" $2 && docker manifest push "$1" && return 0
+              docker buildx imagetools create -t "$1" $2 && return 0
               [ "$i" -eq 3 ] && return 1
-              echo "manifest $1 failed (attempt $i), retry in 15s"
+              echo "index $1 failed (attempt $i), retry in 15s"
               sleep 15
             done
           }
 
-          echo "$ALIYUN_IMAGE_TOKEN" | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin
-          manifest_retry "$ALIYUN_IMAGE_REPOSITORY:$tag" "$refs_aliyun"
-          docker logout
-
-          echo "$DOCKERHUB_TOKEN" | docker login --username yansongda --password-stdin
-          manifest_retry "$DOCKERHUB_IMAGE_REPOSITORY:$tag" "$refs_hub"
-          docker logout
+          # Fail loudly if an index ever carries anything but amd64+arm64
+          # (e.g. an unknown/unknown provenance attestation caused by a builder
+          # change), instead of silently publishing a broken multi-arch tag.
+          verify_index() {
+            got=$(docker buildx imagetools inspect --raw "$1" \
+              | jq -r '[.manifests[].platform | "\(.os)/\(.architecture)"] | sort | join(",")')
+            if [ "$got" != "$EXPECTED_PLATFORMS" ]; then
+              echo "unexpected platforms in $1: '$got' (want '$EXPECTED_PLATFORMS')"
+              return 1
+            fi
+            echo "$1: $got"
+          }
 
           echo "$GITHUB_TOKEN" | docker login ghcr.io --username=${{ github.actor }} --password-stdin
-          manifest_retry "$ghcr_image:$tag" "$refs_ghcr"
-          docker logout
+          echo "$ALIYUN_IMAGE_TOKEN" | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin
+          echo "$DOCKERHUB_TOKEN" | docker login --username yansongda --password-stdin
+
+          FAIL=0
+          index_retry "$ALIYUN_IMAGE_REPOSITORY:$tag" "$refs_aliyun" \
+            && verify_index "$ALIYUN_IMAGE_REPOSITORY:$tag" || FAIL=1
+          index_retry "$DOCKERHUB_IMAGE_REPOSITORY:$tag" "$refs_hub" \
+            && verify_index "$DOCKERHUB_IMAGE_REPOSITORY:$tag" || FAIL=1
+          index_retry "$ghcr_image:$tag" "$refs_ghcr" \
+            && verify_index "$ghcr_image:$tag" || FAIL=1
+
+          docker logout ghcr.io || true
+          docker logout registry.cn-shenzhen.aliyuncs.com || true
+          docker logout || true
+          exit $FAIL
