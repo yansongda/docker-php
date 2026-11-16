@@ -110,7 +110,7 @@ jobs:
             [ "$found" = 1 ] || { echo "no shared extensions found in $d"; exit 1; }
             echo "smoke test ok"
           '
-      - name: Push the image to all registries (concurrent, with retry)
+      - name: Push the image to GHCR (with retry)
         run: |
           push_retry() {
             for i in 1 2 3; do
@@ -121,45 +121,89 @@ jobs:
             done
           }
 
-          # Registry auth endpoints flake (e.g. Aliyun dockerauth: connection reset
-          # by peer). Logins stay sequential: parallel docker CLI calls would race
-          # on ~/.docker/config.json.
-          login_all() {
-            echo "$GITHUB_TOKEN" | docker login ghcr.io --username=${{ github.actor }} --password-stdin &&
-            echo "$ALIYUN_IMAGE_TOKEN" | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin &&
-            echo "$DOCKERHUB_TOKEN" | docker login --username yansongda --password-stdin
-          }
-
+          # Registry auth endpoints flake (e.g. connection reset by peer), so the
+          # login is retried too.
           for i in 1 2 3; do
-            login_all && break
+            echo "$GITHUB_TOKEN" | docker login ghcr.io --username=${{ github.actor }} --password-stdin && break
             [ "$i" -eq 3 ] && exit 1
-            echo "registry login failed (attempt $i), retry in 20s"
+            echo "login to ghcr.io failed (attempt $i), retry in 20s"
             sleep 20
           done
 
           docker tag app "$ghcr_image:$tag"
-          docker tag app "$ALIYUN_IMAGE_REPOSITORY:$tag"
-          docker tag app "$DOCKERHUB_IMAGE_REPOSITORY:$tag"
+          push_retry "$ghcr_image:$tag"
+          docker logout ghcr.io || true
 
-          push_retry "$ghcr_image:$tag" & P1=$!
-          push_retry "$ALIYUN_IMAGE_REPOSITORY:$tag" & P2=$!
-          push_retry "$DOCKERHUB_IMAGE_REPOSITORY:$tag" & P3=$!
+  push:
+    name: Push ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}-${{ matrix.platform }}
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      packages: read
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - '8.5'
+          - '8.4'
+          - '8.3'
+          - '8.2'
+        php-mode:
+          - cli
+          - zts
+        system:
+          - alpine
+          - trixie
+        platform:
+          - linux/amd64
+          - linux/arm64
+    steps:
+      - name: Recognize tag
+        run: |
+          platform=${{ matrix.platform }}
+          tag=${platform#linux/}-${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
+          ghcr_image=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')
+
+          echo "$tag"
+          echo "tag=$tag" >> "$GITHUB_ENV"
+          echo "ghcr_image=$ghcr_image" >> "$GITHUB_ENV"
+      # Fan-out stage. GHCR is only the staging registry: the build job pushes
+      # there, so a flaky target registry can be retried ("re-run failed jobs")
+      # without rebuilding a single image. Adding another registry means adding
+      # one copy_retry line here.
+      - name: Copy the image to Aliyun & Docker Hub (concurrent, with retry)
+        run: |
+          sudo apt-get install -y skopeo > /dev/null
+
+          copy_retry() {
+            for i in 1 2 3; do
+              skopeo copy --retry-times 3 "$@" && return 0
+              [ "$i" -eq 3 ] && return 1
+              echo "copy to $2 failed (attempt $i), retry in 15s"
+              sleep 15
+            done
+          }
+
+          copy_retry "docker://$ghcr_image:$tag" "docker://$ALIYUN_IMAGE_REPOSITORY:$tag" \
+            --src-creds "${{ github.actor }}:$GITHUB_TOKEN" \
+            --dest-creds "yansongda:$ALIYUN_IMAGE_TOKEN" & P1=$!
+          copy_retry "docker://$ghcr_image:$tag" "docker://$DOCKERHUB_IMAGE_REPOSITORY:$tag" \
+            --src-creds "${{ github.actor }}:$GITHUB_TOKEN" \
+            --dest-creds "yansongda:$DOCKERHUB_TOKEN" & P2=$!
 
           FAIL=0
           wait $P1 || FAIL=1
           wait $P2 || FAIL=1
-          wait $P3 || FAIL=1
-
-          docker logout ghcr.io || true
-          docker logout registry.cn-shenzhen.aliyuncs.com || true
-          docker logout || true
           exit $FAIL
 
   index:
     name: Index ${{ matrix.php-mode }}-${{ matrix.php-version }}-${{ matrix.system }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: build
+    needs:
+      - build
+      - push
     permissions:
       packages: write
     strategy:
